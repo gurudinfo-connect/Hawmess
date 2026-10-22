@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-hawmess_tickets}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me-in-production}
+      POSTGRES_DB: ${POSTGRES_DB:-hawmess_tickets}
+    volumes: [hawmess_tickets_pgdata:/var/lib/postgresql/data]
+    ports: ["127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432"]   # for local tools / `npm run dev`; not exposed to the network
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-hawmess_tickets} -d ${POSTGRES_DB:-hawmess_tickets}"], interval: 5s, timeout: 5s, retries: 10 }
+  backend:
+    build: ./backend
+    depends_on: { postgres: { condition: service_healthy } }
+    environment:
+      # Set DATABASE_URL in .env to use a different / external Postgres; otherwise the bundled container above is used.
+      DATABASE_URL: ${DATABASE_URL:-postgres://hawmess_tickets:${POSTGRES_PASSWORD:-change-me-in-production}@postgres:5432/hawmess_tickets}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      RUN_SEED: ${RUN_SEED:-true}
+      SEED_DEMO: ${SEED_DEMO:-true}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@hawmess.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin@123}
+      STORAGE_DIR: /app/storage
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-Hawmess <no-reply@example.com>}
+    volumes: [uploads:/app/storage]
+  frontend:
+    build: ./frontend
+    depends_on: [backend]
+    ports: ["${FRONTEND_PORT:-3100}:80"]
+volumes:
+  hawmess_tickets_pgdata:
+  uploads:
