@@ -8,7 +8,7 @@ types.setTypeParser(1082, (val: string) => val); // DATE stays 'YYYY-MM-DD' (no 
 types.setTypeParser(20, (val: string) => parseInt(val, 10)); // BIGINT (e.g. COUNT(*))
 
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://hawmess_tickets:change-me-in-production@localhost:5433/hawmess_tickets',
+  connectionString: process.env.DATABASE_URL || 'postgres://hawmess_tickets:4264caba53d154f2e17542e514119a0bef49eee86ce2487f@localhost:5433/hawmess_tickets',
   max: 10,
 });
 
