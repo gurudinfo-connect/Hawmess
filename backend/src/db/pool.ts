@@ -7,6 +7,16 @@ types.setTypeParser(1700, (val: string) => parseFloat(val)); // NUMERIC
 types.setTypeParser(1082, (val: string) => val); // DATE stays 'YYYY-MM-DD' (no timezone shifting)
 types.setTypeParser(20, (val: string) => parseInt(val, 10)); // BIGINT (e.g. COUNT(*))
 
+
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl && process.env.NODE_ENV === 'production') {
+  throw new Error(
+    'DATABASE_URL is missing from the production environment. ' +
+    'Configure it in the Render backend service settings.'
+  );
+}
+
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgres://hawmess_tickets:4264caba53d154f2e17542e514119a0bef49eee86ce2487f@localhost:5433/hawmess_tickets',
   max: 10,
