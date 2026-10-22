@@ -8,13 +8,32 @@ types.setTypeParser(1082, (val: string) => val); // DATE stays 'YYYY-MM-DD' (no 
 types.setTypeParser(20, (val: string) => parseInt(val, 10)); // BIGINT (e.g. COUNT(*))
 
 
+
 const databaseUrl = process.env.DATABASE_URL;
 
-if (!databaseUrl && process.env.NODE_ENV === 'production') {
-  throw new Error(
-    'DATABASE_URL is missing from the production environment. ' +
-    'Configure it in the Render backend service settings.'
-  );
+if (!databaseUrl) {
+  console.error('DATABASE_URL is missing from the backend environment.');
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Cannot start Hawmess: configure DATABASE_URL in Render.'
+    );
+  }
+}
+
+if (databaseUrl) {
+  try {
+    const parsed = new URL(databaseUrl);
+
+    console.log('Database configuration:', {
+      configured: true,
+      host: parsed.hostname,
+      port: parsed.port || '5432',
+      database: parsed.pathname.replace(/^\//, ''),
+    });
+  } catch {
+    throw new Error('DATABASE_URL is not a valid database URL.');
+  }
 }
 
 export const pool = new Pool({
