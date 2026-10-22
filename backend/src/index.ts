@@ -28,7 +28,14 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process
 
 const app = express();
 app.use(helmet());
-app.use(cors({ origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : true }));
+const allowedOrigins = [
+  "https://hawmess-frontend.onrender.com",
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('tiny'));
 app.set('trust proxy', 1);
