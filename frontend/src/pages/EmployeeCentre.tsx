@@ -11,9 +11,8 @@ export default function EmployeeCentre() {
   const kb = useQuery({ queryKey: ['ec-kb'], queryFn: () => api(`/knowledge${qs({ pageSize: 4 })}`) });
   const n = nav.data || {}; const rows: any[] = mine.data?.data || []; const arts: any[] = kb.data?.data || [];
   const actions = [
-    { label: 'Report an incident', to: `${b}/tickets?type=incident&new=1`, icon: 'alert' }, { label: 'Request a service', to: `${b}/service-catalogue`, icon: 'building' },
+    { label: 'Request a service', to: `${b}/service-catalogue`, icon: 'building' },
     { label: 'Leave & requests', to: `${b}/todos?tab=requests`, icon: 'calendar' }, { label: 'Message HR', to: `${b}/chat`, icon: 'chat' },
-    { label: 'Browse knowledge', to: `${b}/knowledge`, icon: 'inbox' }, { label: 'My profile', to: `${b}/profile`, icon: 'user' },
   ];
   return <>
     <PageHead crumbs={[{ label: 'Self service' }, { label: 'Employee centre' }]} title="Employee centre" sub={`Welcome${user?.name ? `, ${user.name.split(' ')[0]}` : ''} — everything you need in one place`} />

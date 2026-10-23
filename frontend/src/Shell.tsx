@@ -8,7 +8,7 @@ type Child = { label: string; to?: string; icon?: string; badge?: number; headin
 type Item = { label: string; to?: string; icon?: string; badge?: number; children?: Child[]; active?: (path: string, sp: URLSearchParams) => boolean };
 const clip = (x: string, n = 38) => (x.length > n ? `${x.slice(0, n - 1)}…` : x);
 
-/** Top row: Dashboard · Incidents ▾ · Favorites ▾ · Workspace.  Everything else lives in the "more" (hamburger) menu. */
+/** Top row: Dashboard · Visual task boards · Incidents ▾ · Favorites ▾ · Workspace.  Everything else lives in the "more" (hamburger) menu. */
 function menu(role: Role, nv: any = {}): { left: Item[]; more: Item[] } {
   const b = baseFor(role); const staff = role !== 'employee';
   const inc = (q = '') => `${b}/tickets?type=incident${q ? `&${q}` : ''}`;
@@ -16,7 +16,8 @@ function menu(role: Role, nv: any = {}): { left: Item[]; more: Item[] } {
   const onTickets = (p: string) => p === `${b}/tickets`;
   const dash: Item = { label: 'Dashboard', to: `${b}/dashboard`, icon: 'dashboard' };
 
-  const incidents: Item = { label: 'Incidents', icon: 'alert', active: (p, sp) => onTickets(p) && sp.get('type') === 'incident',
+  const boards: Item = { label: 'Visual task boards', to: t('?mode=kanban'), active: (p, sp) => onTickets(p) && sp.get('mode') === 'kanban' };
+  const incidents: Item = { label: 'Incidents', icon: 'alert', active: (p, sp) => onTickets(p) && sp.get('type') === 'incident' && sp.get('mode') !== 'kanban',
     children: staff
       ? [{ label: 'Report an incident', to: inc('new=1'), icon: 'plus' }, { label: 'All incidents', to: inc() }, { label: 'Open', to: inc('view=open'), badge: nv.incidents_open }, { label: 'Unassigned', to: inc('view=unassigned') }, { label: 'Assigned to me', to: inc('view=mine') },
          { label: 'In progress', to: inc('status=in_progress') }, { label: 'Pending', to: inc('status=pending') }, { label: 'Escalated', to: inc('view=escalated'), badge: nv.incidents_escalated }, { label: 'SLA breached', to: inc('view=breached') },
@@ -47,18 +48,14 @@ function menu(role: Role, nv: any = {}): { left: Item[]; more: Item[] } {
   const sep: Child = { label: '', divider: true };
   const all: Item = { label: 'All', icon: 'menu', children: [
     SS('Self service'),
+    { label: 'My requests', to: t('?type=service_request&view=requested') },
     { label: 'Business applications', to: `${b}/business-applications` }, { label: 'Dashboards', to: `${b}/dashboard` }, { label: 'Service catalogue', to: `${b}/service-catalogue` },
     { label: 'Employee centre', to: `${b}/employee-centre` }, { label: 'Knowledge', to: `${b}/knowledge` },
     sep,
-    { label: 'Visual task boards', to: t('?mode=kanban') }, { label: 'Incidents', to: inc() }, { label: 'Watched incidents', to: inc('view=watching') },
-    { label: 'My requests', to: t('?type=service_request&view=requested') }, { label: 'Requested items', to: t('?type=service_request') }, { label: 'Watched requested items', to: t('?type=service_request&view=watching') },
-    sep,
-    SS('Incidents'),
-    { label: 'Create new', to: inc('new=1') }, { label: 'Assigned to me', to: inc('view=mine') }, { label: 'Open', to: inc('view=open') }, { label: 'Open - unassigned', to: inc('view=unassigned') },
-    { label: 'Watched incidents', to: inc('view=watching') }, { label: 'Resolved', to: inc('status=resolved') },
+    { label: 'Requested items', to: t('?type=service_request') }, { label: 'Watched requested items', to: t('?type=service_request&view=watching') },
   ] };
   const more = [all];
-  return { left: [dash, incidents, favorites, workspace], more };
+  return { left: [dash, boards, incidents, favorites, workspace], more };
 }
 
 function GlobalSearch({ base }: { base: string }) {
@@ -124,16 +121,16 @@ export default function Shell() {
         <Link to={`${base}/chat`} className="tool" aria-label={`Messages${chat.data?.unread ? `, ${chat.data.unread} unread` : ''}`}><Ic n="chat" />{chat.data?.unread > 0 && <span className="dot">{chat.data.unread}</span>}</Link>
         <Notifications base={base} />
         <button className="tool" onClick={toggle} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} title="Theme"><Ic n={theme === 'dark' ? 'sun' : 'moon'} /></button>
-        <div className="nav-item" ref={pbox}><button className="tool tool-avatar" aria-label="Profile menu" aria-expanded={pm} onClick={() => setPm(o => !o)}><Avatar name={user?.name} /></button>
+        <div className="nav-item" ref={pbox}><button className="tool tool-user" aria-label="Profile menu" aria-expanded={pm} onClick={() => setPm(o => !o)}><span className="u-name">{user?.name}</span><span className="u-role">{roleLabel(role)}</span></button>
           <div className="dd" style={{ display: pm ? 'block' : 'none', minWidth: 240 }}>
             <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><b>{user?.name}</b><div className="cell-sub">{user?.email}</div><span className="role-chip" style={{ marginTop: 6, display: 'inline-block' }}>{roleLabel(role)}</span></div>
             <Link to={`${base}/profile`}><Ic n="user" />Profile & settings</Link><Link to={`${base}/notifications`}><Ic n="bell" />Notifications</Link><button onClick={logout}><Ic n="logout" />Sign out</button></div></div>
         <Link to={`${base}/dashboard`} className="brand" aria-label="Hawmess home"><img src="/hawmess-logo-nav.png" alt="Hawmess" /></Link>
-        <div className="nav-item more" ref={mbox}><button className="tool" aria-label="More" aria-haspopup="true" aria-expanded={mm} onClick={() => setMm(o => !o)}><Ic n={mm ? 'x' : 'menu'} /></button>
+        <div className="nav-item more" ref={mbox}><button className="tool tool-menu" aria-label="More" aria-haspopup="true" aria-expanded={mm} onClick={() => setMm(o => !o)}><Ic n={mm ? 'x' : 'menu'} /><span>Menu</span></button>
           <div className="dd more-panel" style={{ display: mm ? 'block' : 'none' }}>
             {more.map(it => it.children ? <div key={it.label} className="mgroup"><div className="dd-h"><Ic n={it.icon || 'dashboard'} />{it.label}</div>{it.children.map(child)}</div>
               : <Link key={it.label} to={it.to!} className="mtop"><Ic n={it.icon || 'dashboard'} /><span className="dd-t">{it.label}</span></Link>)}
-            <div className="mgroup"><Link to={`${base}/profile`}><Ic n="user" />Profile & settings</Link><button onClick={logout}><Ic n="logout" />Sign out</button></div></div></div>
+            <div className="mgroup"><Link to={role === 'employee' ? `${base}/chat` : `${base}/people?role=employee`}><Ic n="users" />All Employees</Link><Link to={`${base}/reports`}><Ic n="chart" />Resource & Data</Link><Link to={`${base}/profile`}><Ic n="user" />Profile & settings</Link><button onClick={logout}><Ic n="logout" />Sign out</button></div></div></div>
         <button className="tool burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(o => !o)}><Ic n={open ? 'x' : 'menu'} /></button>
       </div>
     </header>

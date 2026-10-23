@@ -301,3 +301,25 @@ a.tile:hover{text-decoration:none;border-color:var(--primary);transform:translat
 .b-accepted{background:var(--green-bg);color:var(--green)}.b-declined{background:var(--red-bg);color:var(--red)}
 .accept-bar{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-left:4px solid var(--orange)}
 .pbar{height:8px;border-radius:99px;background:var(--grey-bg);overflow:hidden;min-width:120px}.pbar>span{display:block;height:100%;background:var(--teal);border-radius:99px;transition:width .3s}
+
+/* ---- navbar v4 (per design): text-only links · pill active · orange count badges · user name + role · logo · labelled Menu ---- */
+.nav{height:56px;gap:10px;padding:0 22px;background:#fff;border-bottom:3px solid var(--amber);box-shadow:none}
+.nav-l{gap:6px}
+.nav-l .nav-link>.ic:first-child{display:none!important}
+.nav-l .nav-link{padding:8px 12px;font-size:15px;font-weight:500;color:var(--nav-text)}
+.nav-l .nav-link.active{background:#fdeee3;color:var(--navy);box-shadow:inset 0 -2px 0 var(--orange);border-radius:10px}
+.nav-l .nav-link .nbadge{min-width:22px;height:22px;border-radius:50%;padding:0;font-size:12px}
+.gsearch input{width:min(26vw,475px);height:40px;border-radius:12px;background:#f6f8fc;font-size:14.5px}
+.nav-r{gap:14px}
+.nav-r>.gsearch{margin-right:6px}
+.tool .dot{top:-6px;right:-8px;min-width:19px;height:19px;padding:0;border:0;border-radius:50%;font:700 11px/19px var(--sans);box-sizing:border-box}
+.tool-user{width:auto;height:auto;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:4px 6px;border-radius:8px}
+.tool-user .u-name{font-weight:600;font-size:15.5px;line-height:1.1;color:var(--navy);white-space:nowrap}
+.tool-user .u-role{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 9px;border-radius:12px;background:#fff1e6;color:var(--orange-h);line-height:1.3}
+.tool-menu{width:auto;height:auto;display:flex;flex-direction:column;align-items:center;gap:1px;padding:3px 8px;font-size:12px;font-weight:500}
+.tool-menu .ic{width:26px;height:26px}
+.brand img{height:44px!important}
+.nav .brand{margin:0 4px 0 2px}
+@media(max-width:1250px){.nav-l .nav-link{font-size:14px;padding:8px 8px}.gsearch input{width:200px}}
+@media(max-width:960px){.nav{padding:0 12px}.tool-user .u-name{font-size:13px}.tool-menu span{display:none}.tool-menu .ic{width:20px;height:20px}.nav-l .nav-link>.ic:first-child{display:none!important}}
+@media(max-width:760px){.tool-user{display:none}}
