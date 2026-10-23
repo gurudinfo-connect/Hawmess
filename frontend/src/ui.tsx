@@ -63,7 +63,7 @@ export function useDebounced<T>(v: T, ms = 300) { const [d, setD] = useState(v);
 export const useBase = () => baseFor(roleOf());
 
 // ---------- charts (dependency-free SVG/CSS) ----------
-export function BarList({ rows, color = 'var(--teal)', empty = 'No data yet' }: { rows: { label: string; value: number; color?: string }[]; color?: string; empty?: string }) {
+export function BarList({ rows, color = 'var(--c-teal)', empty = 'No data yet' }: { rows: { label: string; value: number; color?: string }[]; color?: string; empty?: string }) {
   const max = Math.max(1, ...rows.map(r => r.value)); if (!rows.length) return <p className="sub">{empty}</p>;
   return <div>{rows.map(r => <div className="hbar" key={r.label}><span className="lab" title={r.label}>{r.label}</span><span className="t"><i style={{ width: `${(r.value / max) * 100}%`, ['--c' as any]: r.color || color }} /></span><span className="v">{r.value}</span></div>)}</div>;
 }
@@ -73,10 +73,10 @@ export function TrendChart({ data }: { data: { label: string; created: number; r
   return <div><svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Tickets created and resolved over the last 14 days">
     {[0, 0.5, 1].map(f => <g key={f}><line x1={pad} x2={W - pad} y1={y(max * f)} y2={y(max * f)} stroke="var(--rule)" /><text x={4} y={y(max * f) + 4} fontSize="10" fill="var(--muted)">{Math.round(max * f)}</text></g>)}
     {data.map((d, i) => <g key={i}>
-      <rect x={pad + i * bw + bw * 0.12} y={y(d.created)} width={bw * 0.36} height={H - pad - y(d.created)} rx="2" fill="var(--orange)"><title>{d.label}: {d.created} created</title></rect>
-      <rect x={pad + i * bw + bw * 0.5} y={y(d.resolved)} width={bw * 0.36} height={H - pad - y(d.resolved)} rx="2" fill="var(--teal)"><title>{d.label}: {d.resolved} resolved</title></rect>
+      <rect x={pad + i * bw + bw * 0.12} y={y(d.created)} width={bw * 0.36} height={H - pad - y(d.created)} rx="2" fill="var(--c-orange)"><title>{d.label}: {d.created} created</title></rect>
+      <rect x={pad + i * bw + bw * 0.5} y={y(d.resolved)} width={bw * 0.36} height={H - pad - y(d.resolved)} rx="2" fill="var(--c-teal)"><title>{d.label}: {d.resolved} resolved</title></rect>
       {i % 2 === 0 && <text x={pad + i * bw + bw / 2} y={H - 8} fontSize="9.5" textAnchor="middle" fill="var(--muted)">{d.label}</text>}</g>)}
-  </svg><div className="legend"><span><i style={{ background: 'var(--orange)' }} />Created</span><span><i style={{ background: 'var(--teal)' }} />Resolved</span></div></div>;
+  </svg><div className="legend"><span><i style={{ background: 'var(--c-orange)' }} />Created</span><span><i style={{ background: 'var(--c-teal)' }} />Resolved</span></div></div>;
 }
 export const Donut = ({ parts }: { parts: { label: string; value: number; color: string }[] }) => {
   const total = parts.reduce((s, p) => s + p.value, 0); if (!total) return <p className="sub">No data yet</p>; let acc = 0; const R = 42, C = 2 * Math.PI * R;

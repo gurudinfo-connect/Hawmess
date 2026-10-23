@@ -54,7 +54,7 @@ input[type=checkbox],input[type=radio]{width:auto}input[type=file]{padding:6px}i
 .badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;background:var(--grey-bg);color:var(--muted)}
 .b-new{background:var(--purple-bg);color:var(--purple)}.b-open{background:var(--blue-bg);color:var(--link)}.b-assigned{background:var(--teal-bg);color:#00877a}.b-in_progress{background:var(--yellow-bg);color:var(--yellow)}.b-pending{background:#d3e8fb;color:#0944a0}:root[data-theme=dark] .b-pending{background:#123055;color:#7fb3f0}:root[data-theme=dark] .b-assigned{color:#5fdbe4}
 .b-resolved,.b-approved,.b-completed,.b-active{background:var(--green-bg);color:var(--green)}.b-closed,.b-cancelled,.b-inactive{background:var(--grey-bg);color:var(--muted)}.b-rejected,.b-critical,.b-urgent,.b-breached,.b-failed{background:var(--red-bg);color:var(--red)}.b-high{background:#d3e8fb;color:#0944a0}:root[data-theme=dark] .b-high{background:#123055;color:#7fb3f0}.b-medium,.b-planning,.b-on_hold{background:var(--yellow-bg);color:var(--yellow)}.b-low{background:var(--grey-bg);color:var(--muted)}.b-ok{background:var(--green-bg);color:var(--green)}.b-esc{background:var(--red-bg);color:var(--red)}
-.pri-dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--muted)}.pri-critical{background:var(--red)}.pri-high{background:var(--orange)}.pri-medium{background:var(--amber)}.pri-low{background:var(--teal)}
+.pri-dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:var(--muted)}.pri-critical{background:var(--red)}.pri-high{background:var(--c-orange)}.pri-medium{background:var(--c-amber)}.pri-low{background:var(--c-teal)}
 
 /* ---- kanban (Odoo helpdesk style) ---- */
 .kanban{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,1fr);gap:14px;overflow-x:auto;padding-bottom:10px;align-items:start}.kcol{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:10px;min-height:120px}
@@ -367,3 +367,7 @@ a.tile:hover{text-decoration:none;border-color:var(--primary);transform:translat
 .gsearch input{background:#f3f7fb;border-color:#d9e3ef}
 .gsearch input:focus{border-color:var(--brand-teal);box-shadow:0 0 0 3px #00c2ae26}
 .nav.open .nav-l{border-bottom:3px solid var(--brand-teal)}
+
+/* ---- dashboard & status colours: distinct hues (the brand teal vars are all the same family, so data colours get their own) ---- */
+:root{--c-orange:#f07a1a;--c-amber:#f2b01e;--c-teal:#0fb5a6}
+:root[data-theme=dark]{--c-orange:#ff9a4d;--c-amber:#ffc94d;--c-teal:#2fd3c3}

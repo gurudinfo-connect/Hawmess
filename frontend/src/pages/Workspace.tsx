@@ -19,7 +19,7 @@ export default function Workspace() {
   const list = useQuery({ queryKey: ['tickets', 'workspace', params, open, page], queryFn: () => api(`/tickets${qs({ ...params, ...(open && !params.status ? { status: 'new,open,assigned,in_progress,pending' } : {}), page, pageSize: 25 })}`), placeholderData: p => p });
   const nav = useQuery({ queryKey: ['ticket-nav'], queryFn: () => api('/tickets/nav'), refetchInterval: 30000 });
   const rows: any[] = list.data?.data || []; const c = nav.data || {};
-  const stats = [['Open & active', c.ws_open, 'var(--blue)'], ['Raised by me', c.ws_requested, 'var(--teal)'], ['Assigned to me', c.ws_mine, 'var(--orange)'], ['Watching', c.watching, 'var(--purple)']];
+  const stats = [['Open & active', c.ws_open, 'var(--blue)'], ['Raised by me', c.ws_requested, 'var(--c-teal)'], ['Assigned to me', c.ws_mine, 'var(--c-orange)'], ['Watching', c.watching, 'var(--purple)']];
 
   return <>
     <PageHead crumbs={[{ label: 'Workspace' }]} title="My workspace" sub="Every ticket you are involved in — raised, assigned, escalated to you, watching or commented on" />

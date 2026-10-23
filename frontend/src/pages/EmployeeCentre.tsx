@@ -18,9 +18,9 @@ export default function EmployeeCentre() {
     <PageHead crumbs={[{ label: 'Self service' }, { label: 'Employee centre' }]} title="Employee centre" sub={`Welcome${user?.name ? `, ${user.name.split(' ')[0]}` : ''} — everything you need in one place`} />
     <div className="grid g4" style={{ marginBottom: 16 }}>
       <Kpi label="My open items" value={n.ws_open} icon="ticket" color="var(--blue)" to={`${b}/workspace`} />
-      <Kpi label="Raised by me" value={n.ws_requested} icon="user" color="var(--teal)" to={`${b}/tickets?view=requested`} />
-      <Kpi label="Watching" value={n.watching} icon="eye" color="var(--amber)" to={`${b}/tickets?view=watching`} />
-      <Kpi label="Starred" value={n.favorites} icon="star" color="var(--orange)" to={`${b}/tickets?view=favorites`} /></div>
+      <Kpi label="Raised by me" value={n.ws_requested} icon="user" color="var(--c-teal)" to={`${b}/tickets?view=requested`} />
+      <Kpi label="Watching" value={n.watching} icon="eye" color="var(--c-amber)" to={`${b}/tickets?view=watching`} />
+      <Kpi label="Starred" value={n.favorites} icon="star" color="var(--c-orange)" to={`${b}/tickets?view=favorites`} /></div>
     <h2 className="sec-h">Quick actions</h2>
     <div className="tiles" style={{ marginBottom: 20 }}>{actions.map(a => <Link key={a.label} to={a.to} className="tile row"><div className="tile-ic"><Ic n={a.icon} /></div><h3>{a.label}</h3></Link>)}</div>
     <div className="grid g2">

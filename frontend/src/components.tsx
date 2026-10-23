@@ -4,8 +4,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, apiForm, ago, label, roleOf, baseFor, getUser, PRIORITIES } from './api';
 import { Badge, Field, Ic, Modal, PageHead, useToast } from './ui';
 
-export const STATUS_COLORS: Record<string, string> = { new: 'var(--purple)', open: 'var(--blue)', assigned: 'var(--teal)', in_progress: 'var(--amber)', pending: 'var(--orange)', resolved: 'var(--green)', closed: 'var(--muted)', cancelled: 'var(--muted)' };
-export const PRI_COLORS: Record<string, string> = { critical: 'var(--red)', high: 'var(--orange)', medium: 'var(--amber)', low: 'var(--teal)' };
+export const STATUS_COLORS: Record<string, string> = { new: 'var(--purple)', open: 'var(--blue)', assigned: 'var(--c-teal)', in_progress: 'var(--c-amber)', pending: 'var(--c-orange)', resolved: 'var(--green)', closed: 'var(--muted)', cancelled: 'var(--muted)' };
+export const PRI_COLORS: Record<string, string> = { critical: 'var(--red)', high: 'var(--c-orange)', medium: 'var(--c-amber)', low: 'var(--c-teal)' };
 
 export const useCategories = () => useQuery({ queryKey: ['categories'], queryFn: () => api('/config/categories'), staleTime: 60000 });
 export const useLookup = () => useQuery({ queryKey: ['lookup'], queryFn: () => api('/users/lookup/all'), staleTime: 60000 });
