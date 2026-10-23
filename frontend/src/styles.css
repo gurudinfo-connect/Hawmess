@@ -371,3 +371,8 @@ a.tile:hover{text-decoration:none;border-color:var(--primary);transform:translat
 /* ---- dashboard & status colours: distinct hues (the brand teal vars are all the same family, so data colours get their own) ---- */
 :root{--c-orange:#f07a1a;--c-amber:#f2b01e;--c-teal:#0fb5a6}
 :root[data-theme=dark]{--c-orange:#ff9a4d;--c-amber:#ffc94d;--c-teal:#2fd3c3}
+
+/* ---- full-width layout, no visible page scrollbar (page still scrolls with wheel / touch / keys) ---- */
+html{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+.page{max-width:none;width:100%;margin:0;padding-left:24px;padding-right:24px}
+@media(max-width:760px){.page{padding-left:12px;padding-right:12px}}
