@@ -48,6 +48,7 @@ function menu(role: Role, nv: any = {}): { left: Item[]; more: Item[] } {
   const sep: Child = { label: '', divider: true };
   const all: Item = { label: 'All', icon: 'menu', children: [
     SS('Self service'),
+    ...(role === 'employee' ? [{ label: 'Apply for leave', to: `${b}/todos?tab=requests&new=leave` }] : []),
     { label: 'My requests', to: t('?type=service_request&view=requested') },
     { label: 'Business applications', to: `${b}/business-applications` }, { label: 'Dashboards', to: `${b}/dashboard` }, { label: 'Service catalogue', to: `${b}/service-catalogue` },
     { label: 'Employee centre', to: `${b}/employee-centre` }, { label: 'Knowledge', to: `${b}/knowledge` },

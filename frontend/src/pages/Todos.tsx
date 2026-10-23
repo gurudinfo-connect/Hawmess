@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, qs, roleOf, fmtDate, fmtDateTime, label, ago, getUser } from '../api';
@@ -57,29 +57,32 @@ function TaskDetail({ id, onClose, onEdit }: { id: string; onClose: () => void; 
 }
 
 function Requests({ sp, go, role }: { sp: URLSearchParams; go: (p: Record<string, string>) => void; role: string }) {
-  const toast = useToast(); const qc = useQueryClient(); const staff = role !== 'employee'; const status = sp.get('status') || ''; const type = sp.get('type') || ''; const [page, setPage] = useState(1); const [mine, setMine] = useState(false); const [newReq, setNew] = useState(false); const [decide, setDecide] = useState<any>(null);
+  const toast = useToast(); const qc = useQueryClient(); const staff = role !== 'employee'; const status = sp.get('status') || ''; const type = sp.get('type') || ''; const [page, setPage] = useState(1); const [mine, setMine] = useState(false); const [newReq, setNew] = useState(sp.get('new') === 'leave'); const [decide, setDecide] = useState<any>(null);
   const q = useQuery({ queryKey: ['requests', status, type, page, mine], queryFn: () => api(`/requests${qs({ status, type, page, pageSize: 25, mine: mine ? 1 : '' })}`), placeholderData: p => p }); const rows: any[] = q.data?.data || []; const me = getUser()?.id;
+  useEffect(() => { if (sp.get('new') === 'leave') setNew(true); }, [sp]);
   const cancel = useMutation({ mutationFn: (id: string) => api(`/requests/${id}/cancel`, { method: 'POST' }), onSuccess: () => { qc.invalidateQueries({ queryKey: ['requests'] }); toast('Request cancelled'); }, onError: (e: any) => toast(e.message, 'error') });
-  const canDecide = (r: any) => staff && r.status === 'pending' && r.user_id !== me && !(role === 'hr' && ['admin', 'hr'].includes(r.requester_role_name));
+  const canDecide = (r: any) => staff && r.status === 'pending' && r.user_id !== me && !(role === 'hr' && (['admin', 'hr'].includes(r.requester_role_name) || r.send_to === 'admin'));
+  const sentTo = (r: any) => r.send_to === 'hr' ? 'HR' : r.send_to === 'admin' ? 'Admin' : 'HR & Admin';
   return <><div className="filters"><select aria-label="Status" value={status} onChange={e => { setPage(1); go({ tab: 'requests', ...(e.target.value ? { status: e.target.value } : {}), ...(type ? { type } : {}) }); }}><option value="">Any status</option>{['pending', 'approved', 'rejected', 'cancelled'].map(s => <option key={s} value={s}>{label(s)}</option>)}</select>
       <select aria-label="Type" value={type} onChange={e => { setPage(1); go({ tab: 'requests', ...(status ? { status } : {}), ...(e.target.value ? { type: e.target.value } : {}) }); }}><option value="">Any type</option>{['leave', 'equipment', 'document', 'other'].map(s => <option key={s} value={s}>{label(s)}</option>)}</select>
       {staff && <label className="chk"><input type="checkbox" checked={mine} onChange={e => setMine(e.target.checked)} />Only my own</label>}<div style={{ flex: 1 }} /><button className="btn primary" onClick={() => setNew(true)}><Ic n="plus" />New request</button></div>
     <ErrorBox error={q.error} />
     {q.isLoading ? <div className="card"><Skeleton /></div> : !rows.length ? <div className="card"><Empty icon="calendar" title="No requests">Submit leave or equipment requests here and track their approval.</Empty></div> :
-      <div className="tbl"><table><thead><tr><th>Request</th>{staff && <th>Employee</th>}<th>Dates</th><th>Status</th><th>Decision</th><th /></tr></thead><tbody>{rows.map(r => <tr key={r.id}>
+      <div className="tbl"><table><thead><tr><th>Request</th>{staff && <th>Employee</th>}<th>Dates</th><th>Sent to</th><th>Status</th><th>Decision</th><th /></tr></thead><tbody>{rows.map(r => <tr key={r.id}>
         <td><b>{r.title}</b><div className="cell-sub"><span className="ticket-no">{r.request_no}</span> · {label(r.type)}{r.leave_type ? ` (${r.leave_type})` : ''}</div>{r.reason && <div className="cell-sub">{r.reason}</div>}</td>{staff && <td>{r.requester_name}<div className="cell-sub">{r.department_name}</div></td>}
-        <td>{r.start_date ? `${fmtDate(r.start_date)} → ${fmtDate(r.end_date)}` : '—'}</td><td><Badge v={r.status} /></td><td className="cell-sub">{r.decided_by_name ? `${r.decided_by_name} · ${ago(r.decided_at)}` : '—'}{r.decision_note && <div>{r.decision_note}</div>}</td>
+        <td>{r.start_date ? `${fmtDate(r.start_date)} → ${fmtDate(r.end_date)}` : '—'}</td><td>{sentTo(r)}</td><td><Badge v={r.status} /></td><td className="cell-sub">{r.decided_by_name ? `${r.decided_by_name} · ${ago(r.decided_at)}` : '—'}{r.decision_note && <div>{r.decision_note}</div>}</td>
         <td style={{ whiteSpace: 'nowrap' }}>{canDecide(r) && <><button className="btn sm primary" onClick={() => setDecide({ r, d: 'approved' })}>Approve</button> <button className="btn sm danger" onClick={() => setDecide({ r, d: 'rejected' })}>Reject</button></>}{r.user_id === me && r.status === 'pending' && <button className="btn sm" onClick={() => cancel.mutate(r.id)}>Cancel</button>}</td></tr>)}</tbody></table>
         <Pager page={page} pageSize={25} total={q.data?.total || 0} onPage={setPage} /></div>}
-    {newReq && <RequestModal onClose={() => setNew(false)} />}{decide && <DecideModal {...decide} onClose={() => setDecide(null)} />}</>;
+    {newReq && <RequestModal role={role} onClose={() => { setNew(false); if (sp.get('new')) go({ tab: 'requests' }); }} />}{decide && <DecideModal {...decide} onClose={() => setDecide(null)} />}</>;
 }
-function RequestModal({ onClose }: { onClose: () => void }) {
-  const toast = useToast(); const qc = useQueryClient(); const [f, setF] = useState<any>({ type: 'leave', leave_type: 'annual', title: '', reason: '', start_date: '', end_date: '' }); const [err, setErr] = useState(''); const [busy, setBusy] = useState(false); const set = (k: string) => (e: any) => setF((s: any) => ({ ...s, [k]: e.target.value }));
+function RequestModal({ onClose, role }: { onClose: () => void; role: string }) {
+  const toast = useToast(); const qc = useQueryClient(); const [f, setF] = useState<any>({ type: 'leave', leave_type: 'annual', title: '', reason: '', start_date: '', end_date: '', send_to: 'both' }); const [err, setErr] = useState(''); const [busy, setBusy] = useState(false); const set = (k: string) => (e: any) => setF((s: any) => ({ ...s, [k]: e.target.value }));
   const save = async (e: React.FormEvent) => { e.preventDefault(); setBusy(true); setErr(''); try { await api('/requests', { method: 'POST', body: f }); qc.invalidateQueries({ queryKey: ['requests'] }); toast('Request submitted'); onClose(); } catch (x: any) { setErr(x.message); setBusy(false); } };
   return <Modal title="New request" onClose={onClose} width={560} footer={<><button className="btn" onClick={onClose}>Cancel</button><button className="btn primary" form="reqform" disabled={busy}>Submit</button></>}><form id="reqform" className="form two" onSubmit={save}>{err && <div className="err full">{err}</div>}
     <Field label="Type"><select value={f.type} onChange={set('type')}><option value="leave">Leave</option><option value="equipment">Equipment</option><option value="document">Document</option><option value="other">Other</option></select></Field>
     {f.type === 'leave' ? <Field label="Leave type"><select value={f.leave_type} onChange={set('leave_type')}>{['annual', 'sick', 'casual', 'unpaid', 'other'].map(s => <option key={s} value={s}>{label(s)}</option>)}</select></Field> : <Field label="Title" req><input value={f.title} onChange={set('title')} required /></Field>}
     {f.type === 'leave' && <><Field label="From" req><input type="date" required value={f.start_date} onChange={set('start_date')} /></Field><Field label="To" req><input type="date" required value={f.end_date} min={f.start_date} onChange={set('end_date')} /></Field></>}
+    {role === 'employee' && <Field label="Send to" req className="full"><select value={f.send_to} onChange={set('send_to')}><option value="hr">HR</option><option value="admin">Admin</option><option value="both">HR & Admin</option></select></Field>}
     <Field label="Reason" className="full"><textarea rows={3} value={f.reason} onChange={set('reason')} /></Field></form></Modal>;
 }
 function DecideModal({ r, d, onClose }: { r: any; d: 'approved' | 'rejected'; onClose: () => void }) {

@@ -337,3 +337,19 @@ a.tile:hover{text-decoration:none;border-color:var(--primary);transform:translat
 .tool-menu span{font-weight:600}
 @media(max-width:1250px){.nav-l .nav-link{font-size:13.5px;padding:7px 6px}.gsearch input{width:min(14vw,170px);min-width:120px}}
 @media(max-width:960px){.tool-menu .ic{width:22px;height:22px}}
+
+/* ---- navbar v6: smaller user name/role, slimmer + longer search ---- */
+.tool-user .u-name{font-size:13.5px;font-weight:600}
+.tool-user .u-role{font-size:9.5px;padding:1px 8px}
+.gsearch input{height:32px;width:min(28vw,460px);min-width:200px;font-size:13.5px;border-radius:10px}
+.gsearch .ic{top:8px;width:16px;height:16px}
+@media(max-width:1250px){.gsearch input{width:min(20vw,260px);min-width:150px}}
+@media(max-width:960px){.tool-user .u-name{font-size:12.5px}}
+
+/* ---- navbar v6: smaller user name/role, slimmer but longer search ---- */
+.tool-user .u-name{font-size:13.5px}
+.tool-user .u-role{font-size:9.5px;padding:1px 7px}
+.gsearch input{height:32px;width:min(26vw,440px);min-width:160px;font-size:13.5px;border-radius:10px}
+.gsearch .ic{top:7px;width:16px;height:16px}
+@media(max-width:1250px){.gsearch input{width:min(16vw,190px);min-width:120px;height:32px}}
+@media(max-width:960px){.tool-user .u-name{font-size:12.5px}}

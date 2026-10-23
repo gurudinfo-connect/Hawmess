@@ -49,7 +49,7 @@ router.get('/', async (req, res) => {
     COUNT(*) FILTER (WHERE t.acceptance='declined' AND t.status NOT IN ${RESOLVED_STATES})::int AS declined_tickets,
     ${SLA_COMPLIANCE} AS sla_compliance FROM tickets t WHERE ${w}`, [...params, u.id]))[0];
   const [pe] = await query<any>(`SELECT COUNT(*) FILTER (WHERE r.status='pending')::int AS pending_requests, COUNT(*) FILTER (WHERE r.status='pending' AND r.type='leave')::int AS pending_leave
-    FROM employee_requests r ${u.role === 'hr' ? `WHERE r.company_id=$1 AND r.user_id<>$2 AND NOT EXISTS (SELECT 1 FROM company_users cu JOIN roles ro ON ro.id=cu.role_id WHERE cu.user_id=r.user_id AND ro.name IN ('admin','hr'))` : 'WHERE r.company_id=$1 AND r.user_id<>$2'}`, [cid, u.id]);
+    FROM employee_requests r ${u.role === 'hr' ? `WHERE r.company_id=$1 AND r.user_id<>$2 AND r.send_to IN ('hr','both') AND NOT EXISTS (SELECT 1 FROM company_users cu JOIN roles ro ON ro.id=cu.role_id WHERE cu.user_id=r.user_id AND ro.name IN ('admin','hr'))` : 'WHERE r.company_id=$1 AND r.user_id<>$2'}`, [cid, u.id]);
   const [pp] = await query<any>(`SELECT COUNT(*) FILTER (WHERE status='active')::int AS active_projects, COUNT(*)::int AS all_projects FROM projects WHERE company_id=$1`, [cid]);
   const [ep] = await query<any>(`SELECT COUNT(*)::int AS total_employees FROM users x JOIN company_users cu ON cu.user_id=x.id WHERE cu.company_id=$1 AND x.is_active`, [cid]);
   const trend = await query(`SELECT to_char(d.d,'DD Mon') AS label, (SELECT COUNT(*)::int FROM tickets t WHERE ${w} AND t.created_at::date=d.d) AS created, (SELECT COUNT(*)::int FROM tickets t WHERE ${w} AND t.resolved_at::date=d.d) AS resolved
