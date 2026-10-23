@@ -28,3 +28,7 @@ Dependencies removed: `pdfkit`, `qrcode` (+ types). Frontend: every invoice / qu
 - `frontend/src/pages/TicketDetail.tsx`, `Tickets.tsx`, `Dashboard.tsx`, `styles.css` — Accept/Decline banner, Update-progress modal, Updates tab, acceptance badges, new tabs and dashboard cards.
 - `backend/tests/helpdesk.test.ts` — new integration test (17 tests total, all passing).
 - Ticket IDs now HW-T##ID## (migration 022_ticket_ref_ids.sql; DB-generated, retried on clash; existing tickets back-filled)
+
+
+## Logo update (Glossy Neon Barid-IN)
+- `frontend/public/`: `barid-logo.png`, `barid-logo-nav.png`, `barid-mark.png` and `favicon.png` regenerated from the new glossy neon Barid-IN logo (transparent background, cropped to content). No code changes needed — `Logo.tsx`, `Shell.tsx` and `Login.tsx` already reference these files.
