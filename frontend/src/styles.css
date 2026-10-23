@@ -323,3 +323,17 @@ a.tile:hover{text-decoration:none;border-color:var(--primary);transform:translat
 @media(max-width:1250px){.nav-l .nav-link{font-size:14px;padding:8px 8px}.gsearch input{width:200px}}
 @media(max-width:960px){.nav{padding:0 12px}.tool-user .u-name{font-size:13px}.tool-menu span{display:none}.tool-menu .ic{width:20px;height:20px}.nav-l .nav-link>.ic:first-child{display:none!important}}
 @media(max-width:760px){.tool-user{display:none}}
+
+/* ---- navbar v5: tighter left side + search, bolder chat & menu icons ---- */
+.nav{padding:0 16px;gap:6px}
+.nav-l{gap:0}
+.nav-l .nav-link{padding:7px 8px;font-size:14.5px;gap:4px}
+.nav-l .nav-link .nbadge{margin-left:0}
+.gsearch input{width:min(17vw,300px);min-width:150px}
+.nav-r{gap:8px}
+.nav-r>.gsearch{margin-right:0}
+.nav-r>a.tool .ic,.tool-menu .ic{stroke-width:2.8}
+.tool-menu .ic{width:28px;height:28px}
+.tool-menu span{font-weight:600}
+@media(max-width:1250px){.nav-l .nav-link{font-size:13.5px;padding:7px 6px}.gsearch input{width:min(14vw,170px);min-width:120px}}
+@media(max-width:960px){.tool-menu .ic{width:22px;height:22px}}
