@@ -30,7 +30,7 @@ export async function sendEmail(params: SendEmailParams): Promise<SendEmailResul
   const pass = isGmail ? process.env.SMTP_PASSWORD?.replace(/\s+/g, '') : process.env.SMTP_PASSWORD?.trim();
   // Gmail only sends as the authenticated account, so default the From address to it
   const from = (isGmail && (!process.env.EMAIL_FROM || /example\.com|hawmess\.com|mopuribusiness\.com/i.test(process.env.EMAIL_FROM)))
-    ? `Hawmess <${user}>` : (process.env.EMAIL_FROM || 'no-reply@example.com');
+    ? `Barid-IN <${user}>` : (process.env.EMAIL_FROM || 'no-reply@example.com');
 
   if (!host || !user || !pass) {
     return {

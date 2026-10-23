@@ -17,7 +17,7 @@ export async function notify(companyId: string, userId: string | null | undefine
   if (opts.email !== false && prefs.email !== false && process.env.SMTP_HOST) {
     void (async () => {   // fire and forget
       try {
-        const r = await sendEmail({ to: u.email, subject: `[Hawmess] ${title}`, text: `${message || title}\n\nOpen Hawmess to view the details.` });
+        const r = await sendEmail({ to: u.email, subject: `[Barid-IN] ${title}`, text: `${message || title}\n\nOpen Barid-IN to view the details.` });
         await query(`INSERT INTO email_log (company_id, user_id, to_email, subject, status, error) VALUES ($1,$2,$3,$4,$5,$6)`, [companyId, userId, u.email, title, r.ok ? 'sent' : 'failed', r.error || null]);
       } catch (e: any) { console.error('email log failed', e?.message); }
     })();

@@ -10,7 +10,7 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@hawmess.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin@123';
 
 async function seed() {
-  console.log('Seeding Hawmess...');
+  console.log('Seeding Barid-IN...');
   const roleDefs: [string, string[]][] = [
     ['admin', ['*']],
     ['hr', ['tickets.manage.hr', 'people.view', 'requests.decide', 'projects.view', 'reports.view']],
@@ -20,7 +20,7 @@ async function seed() {
   const roleId = async (n: string) => (await query<any>(`SELECT id FROM roles WHERE name=$1`, [n]))[0].id;
 
   let company = (await query<any>(`SELECT * FROM companies ORDER BY created_at LIMIT 1`))[0];
-  if (!company) company = (await query<any>(`INSERT INTO companies (name, legal_name, email) VALUES ('Hawmess','Hawmess','support@hawmess.com') RETURNING *`))[0];
+  if (!company) company = (await query<any>(`INSERT INTO companies (name, legal_name, email) VALUES ('Barid-IN','Barid-IN','support@hawmess.com') RETURNING *`))[0];
   const cid = company.id;
 
   const mkUser = async (name: string, email: string, password: string, role: string, extra: { dept?: string; designation?: string } = {}) => {
@@ -140,7 +140,7 @@ async function demo(cid: string, adminId: string, general: string, mkUser: any, 
   const dm = (await query<any>(`INSERT INTO conversations (company_id, type, direct_key, created_by) VALUES ($1,'direct',$2,$3) RETURNING id`, [cid, [asha, hr].sort().join(':'), asha]))[0].id;
   for (const u of [asha, hr]) await query(`INSERT INTO conversation_members (conversation_id, user_id, last_read_at) VALUES ($1,$2, now() - interval '1 day')`, [dm, u]);
   await query(`INSERT INTO messages (conversation_id, sender_id, body, created_at) VALUES ($1,$2,'Hi Priya, could you confirm my leave request for next week?', now() - interval '20 minutes'), ($1,$3,'Hi Asha — yes, I will review it this afternoon.', now() - interval '10 minutes')`, [dm, asha, hr]);
-  await query(`INSERT INTO messages (conversation_id, sender_id, body) VALUES ($1,$2,'Welcome to Hawmess! Use this channel for company-wide announcements and quick questions.')`, [general, adminId]);
+  await query(`INSERT INTO messages (conversation_id, sender_id, body) VALUES ($1,$2,'Welcome to Barid-IN! Use this channel for company-wide announcements and quick questions.')`, [general, adminId]);
 }
 
 seed().then(() => pool.end()).catch(e => { console.error('Seed failed:', e); process.exit(1); });

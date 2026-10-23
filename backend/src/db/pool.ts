@@ -16,7 +16,7 @@ if (!databaseUrl) {
 
   if (process.env.NODE_ENV === 'production') {
     throw new Error(
-      'Cannot start Hawmess: configure DATABASE_URL in Render.'
+      'Cannot start Barid-IN: configure DATABASE_URL in Render.'
     );
   }
 }

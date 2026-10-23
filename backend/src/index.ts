@@ -50,7 +50,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/api/v1/health', (_req, res) => res.json({ ok: true, service: 'Hawmess API' }));
+app.get('/api/v1/health', (_req, res) => res.json({ ok: true, service: 'Barid-IN API' }));
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/tickets', ticketsRoutes);
@@ -75,4 +75,4 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
 });
 
 const port = Number(process.env.PORT || 4000);
-app.listen(port, () => { console.log(`Hawmess API listening on port ${port}`); startReminders(); });
+app.listen(port, () => { console.log(`Barid-IN API listening on port ${port}`); startReminders(); });

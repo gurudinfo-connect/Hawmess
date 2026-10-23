@@ -1,6 +1,6 @@
-# Hawmess — Employee Helpdesk & Ticketing
+# Barid-IN — Employee Helpdesk & Ticketing
 
-*All your tickets, in one place.* Hawmess is a role-based helpdesk for **Admin**, **HR** and **Employees**: tickets with SLA tracking, tasks, projects, leave/requests, reports, an audit trail and built-in chat. It was converted from the previous accounting app — invoices, quotations, customers, vendors, payments, credit notes and CRM leads are **removed** (code, routes and UI).
+*All your tickets, in one place.* Barid-IN is a role-based helpdesk for **Admin**, **HR** and **Employees**: tickets with SLA tracking, tasks, projects, leave/requests, reports, an audit trail and built-in chat. It was converted from the previous accounting app — invoices, quotations, customers, vendors, payments, credit notes and CRM leads are **removed** (code, routes and UI).
 
 Stack (unchanged): React 18 + Vite + TypeScript · Express + TypeScript · PostgreSQL · JWT auth.
 

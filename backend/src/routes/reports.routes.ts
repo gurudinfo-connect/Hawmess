@@ -65,7 +65,7 @@ router.get('/:name', async (req, res) => {
   if (req.query.format === 'csv') {
     const labelled = rows.map(r => Object.fromEntries(def.cols.map(c => [c.label, (r as any)[c.key]])));
     await logAudit({ company_id: u.company_id, user_id: u.id, action: 'export', entity_type: 'report', module: 'reports', description: `${u.name} exported report "${def.title}"` });
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8'); res.setHeader('Content-Disposition', `attachment; filename="hawmess-${req.params.name}-${from}_${to}.csv"`);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8'); res.setHeader('Content-Disposition', `attachment; filename="barid-in-${req.params.name}-${from}_${to}.csv"`);
     return res.send('\uFEFF' + (labelled.length ? toCsv(labelled) : def.cols.map(c => c.label).join(',')));
   }
   res.json({ key: req.params.name, title: def.title, from, to, columns: def.cols, rows });
