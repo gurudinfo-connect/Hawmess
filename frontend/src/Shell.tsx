@@ -110,7 +110,7 @@ export default function Shell() {
   const render = (it: Item) => it.children ? (
     <div className="nav-item" key={it.label}><button className={`nav-link ${isActive(it) ? 'active' : ''}`} aria-haspopup="true"><Ic n={it.icon || 'dashboard'} />{it.label}<Ic n="down" /></button>
       <div className="dd">{it.children.map(child)}</div></div>
-  ) : <NavLink key={it.label} to={it.to!} className={`nav-link ${isActive(it) ? 'active' : ''}`}><Ic n={it.icon || 'dashboard'} />{it.label}{badge(it.badge)}</NavLink>;
+  ) : <Link key={it.label} to={it.to!} className={`nav-link ${isActive(it) ? 'active' : ''}`}><Ic n={it.icon || 'dashboard'} />{it.label}{badge(it.badge)}</Link>;
   return <>
     <a className="skip" href="#main">Skip to content</a>
     <header className={`nav ${open ? 'open' : ''}`}>
