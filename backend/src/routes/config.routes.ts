@@ -114,7 +114,7 @@ router.get('/roles', admin, async (_req, res) => res.json({ data: [
 // ---------- settings (key/value) ----------
 const DEFAULTS: Record<string, any> = {
   general: { product_name: 'Hawmess', support_email: '', timezone: 'Asia/Kolkata', working_hours_note: 'SLA clocks run on calendar time.' },
-  branding: { primary_color: '#e8590c', accent_color: '#fdb71f', default_theme: 'light' },
+  branding: { primary_color: '#0b57c4', accent_color: '#01d8c2', default_theme: 'light' },
   notifications: { ticket_created: true, ticket_assigned: true, status_changed: true, new_reply: true, escalated: true, task_due: true, request_decided: true },
 };
 router.get('/settings', async (req, res) => {

@@ -41,12 +41,12 @@ export default function Login() {
     catch (x: any) { setErr(x.message); } finally { setBusy(false); }
   };
   return <div className="login-wrap">
-    <section className="login-art"><LiveDesk /><div className="bgt" aria-hidden="true">{[0,1,2,3,4,5].map(i => <span key={i} className={`bt bt${i}`} />)}</div><div className="lg"><img src="/hawmess-logo.png" alt="Hawmess - All your tickets, in one place" /></div>
+    <section className="login-art"><LiveDesk /><div className="bgt" aria-hidden="true">{[0,1,2,3,4,5].map(i => <span key={i} className={`bt bt${i}`} />)}</div><div className="lg"><img src="/barid-logo.png" alt="Barid-IN" /></div>
       <div style={{ position: "relative", zIndex: 1 }}><h2>All your tickets, in one place.</h2><ul style={{ listStyle: 'none', padding: 0, marginTop: 22 }}>
         {['Raise and track support requests with live SLA clocks', 'Assign, escalate and resolve with a full audit trail', 'Chat with HR and admins without leaving the desk', 'Tasks, projects and leave requests alongside your tickets'].map(t => <li key={t}><Ic n="check" /> &nbsp;{t}</li>)}</ul><TicketFlow /></div>
-      <small style={{ color: '#9fb4d3' }}>© Hawmess Helpdesk</small></section>
+      <small style={{ color: '#9fb4d3' }}>© Barid-IN</small></section>
     <section className="login-form"><div className="m-flow"><TicketFlow compact /></div><form className="card form" onSubmit={submit} aria-label="Sign in">
-      <div><img className="login-mark" src="/hawmess-logo-nav.png" alt="Hawmess" /><h1 style={{ fontSize: 26 }}>Welcome back</h1><p className="sub">Sign in to your Hawmess workspace</p></div>
+      <div><img className="login-mark" src="/barid-logo-nav.png" alt="Barid-IN" /><h1 style={{ fontSize: 26 }}>Welcome back</h1><p className="sub">Sign in to your Barid-IN workspace</p></div>
       {err && <div className="err" role="alert">{err}</div>}
       <label>Email<input type="email" required autoFocus autoComplete="username" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" /></label>
       <label>Password<input type="password" required autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} /></label>

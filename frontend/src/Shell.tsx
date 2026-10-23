@@ -95,7 +95,8 @@ export default function Shell() {
   const role = roleOf(); const base = baseFor(role); const user = getUser(); const loc = useLocation(); const nav = useNavigate();
   const [open, setOpen] = useState(false); const [pm, setPm] = useState(false); const [mm, setMm] = useState(false); const mbox = useRef<HTMLDivElement>(null); const [theme, setT] = useState<'light' | 'dark'>((document.documentElement.dataset.theme as any) || 'light'); const pbox = useRef<HTMLDivElement>(null);
   const settings = useQuery({ queryKey: ['settings'], queryFn: () => api('/config/settings'), staleTime: 300000 });
-  useEffect(() => { const b = settings.data?.branding; if (b?.primary_color) { const r = document.documentElement.style; r.setProperty('--primary', b.primary_color); r.setProperty('--primary-h', b.primary_color); r.setProperty('--orange', b.primary_color); if (b.accent_color) r.setProperty('--amber', b.accent_color); } }, [settings.data]);
+  useEffect(() => { const b = settings.data?.branding; if (b?.primary_color && b.primary_color.toLowerCase() !== '#e8590c') {   // ignore the legacy orange default
+     const r = document.documentElement.style; r.setProperty('--primary', b.primary_color); r.setProperty('--primary-h', b.primary_color); if (b.accent_color) r.setProperty('--amber', b.accent_color); } }, [settings.data]);
   const navq = useQuery({ queryKey: ['ticket-nav'], queryFn: () => api('/tickets/nav'), refetchInterval: 30000 });
   const { left, more } = menu(role, navq.data || {}); const chat = useQuery({ queryKey: ['chat-unread'], queryFn: () => api('/chat/unread'), refetchInterval: 8000 });
   useEffect(() => { setOpen(false); setPm(false); setMm(false); window.scrollTo(0, 0); }, [loc.pathname, loc.search]);
@@ -126,7 +127,7 @@ export default function Shell() {
           <div className="dd" style={{ display: pm ? 'block' : 'none', minWidth: 240 }}>
             <div style={{ padding: '10px 12px', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><b>{user?.name}</b><div className="cell-sub">{user?.email}</div><span className="role-chip" style={{ marginTop: 6, display: 'inline-block' }}>{roleLabel(role)}</span></div>
             <Link to={`${base}/profile`}><Ic n="user" />Profile & settings</Link><Link to={`${base}/notifications`}><Ic n="bell" />Notifications</Link><button onClick={logout}><Ic n="logout" />Sign out</button></div></div>
-        <Link to={`${base}/dashboard`} className="brand" aria-label="Hawmess home"><img src="/hawmess-logo-nav.png" alt="Hawmess" /></Link>
+        <Link to={`${base}/dashboard`} className="brand" aria-label="Barid-IN home"><img src="/barid-logo-nav.png" alt="Barid-IN" /></Link>
         <div className="nav-item more" ref={mbox}><button className="tool tool-menu" aria-label="More" aria-haspopup="true" aria-expanded={mm} onClick={() => setMm(o => !o)}><Ic n={mm ? 'x' : 'menu'} /><span>Menu</span></button>
           <div className="dd more-panel" style={{ display: mm ? 'block' : 'none' }}>
             {more.map(it => it.children ? <div key={it.label} className="mgroup"><div className="dd-h"><Ic n={it.icon || 'dashboard'} />{it.label}</div>{it.children.map(child)}</div>
