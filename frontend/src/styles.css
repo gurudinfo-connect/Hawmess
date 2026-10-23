@@ -376,3 +376,10 @@ a.tile:hover{text-decoration:none;border-color:var(--primary);transform:translat
 html{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
 .page{max-width:none;width:100%;margin:0;padding-left:24px;padding-right:24px}
 @media(max-width:760px){.page{padding-left:12px;padding-right:12px}}
+
+/* ---- navbar v8: bigger logo for visibility ---- */
+.nav{height:66px}
+.nav .brand img{height:56px!important}
+.nav.open .nav-l{top:66px}
+@media(max-width:960px){.nav{height:58px}.nav .brand img{height:44px!important}.nav.open .nav-l{top:58px}}
+@media(max-width:520px){.nav{height:52px}.nav .brand img{height:38px!important}.nav.open .nav-l{top:52px}}
