@@ -52,6 +52,7 @@ function menu(role: Role, nv: any = {}): { left: Item[]; more: Item[] } {
     { label: 'My requests', to: t('?type=service_request&view=requested') },
     { label: 'Business applications', to: `${b}/business-applications` }, { label: 'Dashboards', to: `${b}/dashboard` }, { label: 'Service catalogue', to: `${b}/service-catalogue` },
     { label: 'Employee centre', to: `${b}/employee-centre` }, { label: 'Knowledge', to: `${b}/knowledge` },
+    { label: 'All Employees', to: role === 'employee' ? `${b}/chat` : `${b}/people?role=employee`, icon: 'users' },
     sep,
     { label: 'Requested items', to: t('?type=service_request') }, { label: 'Watched requested items', to: t('?type=service_request&view=watching') },
   ] };
@@ -131,8 +132,7 @@ export default function Shell() {
         <div className="nav-item more" ref={mbox}><button className="tool tool-menu" aria-label="More" aria-haspopup="true" aria-expanded={mm} onClick={() => setMm(o => !o)}><Ic n={mm ? 'x' : 'menu'} /><span>Menu</span></button>
           <div className="dd more-panel" style={{ display: mm ? 'block' : 'none' }}>
             {more.map(it => it.children ? <div key={it.label} className="mgroup"><div className="dd-h"><Ic n={it.icon || 'dashboard'} />{it.label}</div>{it.children.map(child)}</div>
-              : <Link key={it.label} to={it.to!} className="mtop"><Ic n={it.icon || 'dashboard'} /><span className="dd-t">{it.label}</span></Link>)}
-            <div className="mgroup"><Link to={role === 'employee' ? `${base}/chat` : `${base}/people?role=employee`}><Ic n="users" />All Employees</Link><Link to={`${base}/reports`}><Ic n="chart" />Resource & Data</Link><Link to={`${base}/profile`}><Ic n="user" />Profile & settings</Link><button onClick={logout}><Ic n="logout" />Sign out</button></div></div></div>
+              : <Link key={it.label} to={it.to!} className="mtop"><Ic n={it.icon || 'dashboard'} /><span className="dd-t">{it.label}</span></Link>)}</div></div>
         <button className="tool burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(o => !o)}><Ic n={open ? 'x' : 'menu'} /></button>
       </div>
     </header>
