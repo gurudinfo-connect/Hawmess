@@ -50,7 +50,7 @@ The suite covers authentication, role permissions, privacy of tickets/internal n
 - An employee sees tickets assigned to them (**Assigned to me**, **To accept**). Until they click **Accept ticket** they cannot start work; they can also **Decline** with a reason, which returns the ticket to the queue.
 - After accepting, the employee uses **Update progress**: a note, a % complete and optionally a status move (Start work / Pending / Resolve). Every step lands in the ticket's **Updates** tab.
 - Admin side: notification + dashboard "Employee responses", list tabs **Awaiting acceptance / Accepted / Declined**, an acceptance badge on every ticket, and the Updates tab.
-- **Reassign** to another employee from the same page: same ticket ID, the new assignee has to accept, the previous assignee is notified and loses access, and the full trail stays in *Assignments* / *Updates*. Admin / HR assignees need no acceptance.
+- **Reassign** to another colleague from the same page — admins/HR any time, and the assigned employee once they have accepted (a reason is required, the admins are told): same ticket ID, the new assignee has to accept, the previous assignee is notified and loses access, and the full trail stays in *Assignments* / *Updates*. Admin / HR assignees need no acceptance.
 - Needs migration `021_ticket_acceptance.sql` (`npm run migrate`; applied automatically by the Docker entrypoint).
 
 ## Roles

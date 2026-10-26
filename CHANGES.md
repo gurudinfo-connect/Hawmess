@@ -32,3 +32,12 @@ Dependencies removed: `pdfkit`, `qrcode` (+ types). Frontend: every invoice / qu
 
 ## Logo update (Glossy Neon Barid-IN)
 - `frontend/public/`: `barid-logo.png`, `barid-logo-nav.png`, `barid-mark.png` and `favicon.png` regenerated from the new glossy neon Barid-IN logo (transparent background, cropped to content). No code changes needed — `Logo.tsx`, `Shell.tsx` and `Login.tsx` already reference these files.
+
+
+## Employees can reassign too
+- `backend/src/routes/tickets.routes.ts` — `assignTicket` now also accepts a call from the employee a ticket is assigned to, once they have **accepted** it: person only (no team change, no "unassigned"), a reason is required, same ticket ID, new assignee must accept, requester + admins + previous assignee are notified, and the employee loses access afterwards. New `GET /tickets/:id/reassign-targets` (active colleagues, excluding yourself) and `actions.can_reassign` on the ticket detail.
+- `frontend/src/pages/TicketDetail.tsx` — the **Reassign** button now shows for the accepted assignee; the modal is simplified for employees (colleague picker + required reason) and returns them to the ticket list afterwards.
+- `backend/tests/helpdesk.test.ts` — new checks inside the "assignment to employees" test.
+
+## Fix: applying for leave
+- `backend/src/routes/requests.routes.ts` — the leave form sends an empty title, which became `null` and failed validation (`title: Expected string, received null`). `title` now accepts null; the server fills in "<Type> leave". Regression check added in `tests/helpdesk.test.ts`.

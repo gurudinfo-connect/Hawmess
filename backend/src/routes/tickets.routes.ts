@@ -174,6 +174,14 @@ router.get('/assignable', async (req, res) => {   // who can a ticket be assigne
     WHERE cu.company_id=$1 AND u.is_active AND r.name IN ('admin','hr','employee') ORDER BY (r.name='employee'), u.name`, [req.user!.company_id]) });
 });
 
+/** Who can this ticket be handed to? Staff: anyone assignable. Accepted assignee (employee): any other active colleague. */
+router.get('/:id/reassign-targets', async (req, res) => {
+  const u = req.user!; const t = await loadTicketFor(u, req.params.id); if (!t) throw notFound('Ticket not found');
+  if (!isStaff(u) && !(t.assignee_id === u.id && t.acceptance === 'accepted')) throw forbidden('You cannot reassign this ticket');
+  res.json({ data: await query(`SELECT u.id, u.name, r.name AS role FROM users u JOIN company_users cu ON cu.user_id=u.id JOIN roles r ON r.id=cu.role_id
+    WHERE cu.company_id=$1 AND u.is_active AND r.name IN ('admin','hr','employee') AND ($2::uuid IS NULL OR u.id <> $2) ORDER BY (r.name='employee'), u.name`, [u.company_id, isStaff(u) ? null : u.id]) });   // an employee can't hand it to themselves; staff keep the current assignee in the list
+});
+
 // ---------------- create ----------------
 const createSchema = z.object({
   subject: z.string().trim().min(3).max(200), description: z.string().trim().min(3).max(10000),
@@ -297,7 +305,7 @@ router.get('/:id', async (req, res) => {
       next_statuses: nextStatuses(u, t), can_reply: !closedForReplies && (staff || t.requester_id === u.id || t.assignee_id === u.id), can_internal: staff,
       can_accept: t.assignee_id === u.id && t.acceptance === 'pending' && !TERMINAL.includes(t.status), can_decline: t.assignee_id === u.id && t.acceptance === 'pending' && !TERMINAL.includes(t.status),
       can_update: !TERMINAL.includes(t.status) && (staff || (t.assignee_id === u.id && t.acceptance === 'accepted')),
-      can_assign: staff, can_edit: staff, can_manage_watchers: staff, can_escalate: staff && !TERMINAL.includes(t.status) && !t.is_escalated, can_deescalate: isAdmin(u) && t.is_escalated,
+      can_assign: staff, can_reassign: staff || (t.assignee_id === u.id && t.acceptance === 'accepted' && !TERMINAL.includes(t.status)), can_edit: staff, can_manage_watchers: staff, can_escalate: staff && !TERMINAL.includes(t.status) && !t.is_escalated, can_deescalate: isAdmin(u) && t.is_escalated,
     },
   });
 });
@@ -334,8 +342,14 @@ export async function changeStatus(u: AuthUser, ticketId: string, to: string, no
   await logAudit({ company_id: u.company_id, user_id: u.id, action: 'status_change', entity_type: 'ticket', entity_id: t.id, module: 'tickets', old_value: { status: t.status }, new_value: { status: to }, description: `${u.name} moved ${t.ticket_no} from ${t.status.replace('_', ' ')} to ${label}` });
 }
 
+/** Staff may assign / reassign anything. An employee may hand over a ticket that is assigned to them and that they have accepted — to another person only (never the team, never to nobody). */
 export async function assignTicket(u: AuthUser, ticketId: string, assigneeId: string | null | undefined, teamId: string | null | undefined, note?: string | null) {
-  if (!isStaff(u)) throw forbidden('Only staff can assign tickets');
+  const staff = isStaff(u);
+  if (!staff) {
+    if (teamId !== undefined) throw forbidden('Only staff can change the team');
+    if (!assigneeId) throw bad('Choose who to reassign this ticket to');
+    if (!(note || '').trim()) throw bad('Add a short reason for reassigning the ticket');
+  }
   const cid = u.company_id;
   let newRole: string | null = null;
   if (assigneeId) { newRole = await assigneeRole(cid, assigneeId); if (!newRole) throw bad('Assignee must be an active user of your company'); }
@@ -343,6 +357,10 @@ export async function assignTicket(u: AuthUser, ticketId: string, assigneeId: st
   const before = await withTransaction(async (c) => {
     const t = (await c.query(`SELECT * FROM tickets WHERE id=$1 AND company_id=$2 FOR UPDATE`, [ticketId, cid])).rows[0];
     if (!t) throw notFound('Ticket not found');
+    if (!staff) {
+      if (t.assignee_id !== u.id) throw forbidden('Only the person this ticket is assigned to can reassign it');
+      if (t.acceptance !== 'accepted') throw bad('Accept the ticket before reassigning it (or decline it to send it back to the admin)');
+    }
     if (TERMINAL.includes(t.status)) throw bad('Reopen the ticket before reassigning it');
     const newAssignee = assigneeId === undefined ? t.assignee_id : assigneeId; const newTeam = teamId === undefined ? t.team_id : teamId;
     if (newAssignee === t.assignee_id && newTeam === t.team_id) throw bad('Nothing to change');
@@ -359,7 +377,8 @@ export async function assignTicket(u: AuthUser, ticketId: string, assigneeId: st
   });
   const { t, newAssignee } = before;
   if (newAssignee && newAssignee !== t.assignee_id) await notify(cid, newAssignee, 'ticket_assigned', `Ticket ${t.ticket_no} assigned to you`, acceptanceFor(newRole) ? `${t.subject} — please accept it to start working on it.` : t.subject, 'ticket', t.id);
-  await notifyMany(cid, [t.requester_id, t.assignee_id !== newAssignee ? t.assignee_id : null], u.id, 'ticket_assignment', `Ticket ${t.ticket_no} was ${newAssignee ? (t.assignee_id && t.assignee_id !== newAssignee ? 'reassigned' : 'assigned') : 'moved'}`, t.subject, 'ticket', t.id);
+  const admins = staff ? [] : await staffIds(cid, ['admin']);   // when an employee hands a ticket over, the admins are kept in the loop
+  await notifyMany(cid, [t.requester_id, t.assignee_id !== newAssignee ? t.assignee_id : null, ...admins], u.id, 'ticket_assignment', `Ticket ${t.ticket_no} was ${newAssignee ? (t.assignee_id && t.assignee_id !== newAssignee ? 'reassigned' : 'assigned') : 'moved'}`, staff ? t.subject : `${u.name} reassigned it${note ? `: ${note.slice(0, 120)}` : ''}`, 'ticket', t.id);
   await logAudit({ company_id: cid, user_id: u.id, action: 'assign', entity_type: 'ticket', entity_id: t.id, module: 'tickets', old_value: { assignee_id: t.assignee_id, team_id: t.team_id }, new_value: { assignee_id: before.newAssignee, team_id: before.newTeam }, description: `${u.name} changed the assignment of ${t.ticket_no}` });
 }
 

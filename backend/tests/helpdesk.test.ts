@@ -157,6 +157,7 @@ test('tasks, projects and requests respect ownership and approval rules', async 
   assert.ok(!(await call('GET', '/projects', ctx.e2.token)).json.data.some((x: any) => x.id === p.json.id)); assert.equal((await call('GET', `/projects/${p.json.id}`, ctx.e2.token)).status, 404);
   const lv = await call('POST', '/requests', ctx.e1.token, { type: 'leave', leave_type: 'annual', start_date: '2030-05-01', end_date: '2030-05-03', reason: 'Trip' }); assert.equal(lv.status, 201, lv.text);
   assert.equal((await call('POST', '/requests', ctx.e1.token, { type: 'leave', leave_type: 'sick', start_date: '2030-05-02', end_date: '2030-05-04' })).status, 400, 'overlapping leave refused');
+  const ui = await call('POST', '/requests', ctx.e1.token, { type: 'leave', leave_type: 'casual', title: '', reason: '', start_date: '2030-07-01', end_date: '2030-07-02', send_to: 'hr' }); assert.equal(ui.status, 201, 'the leave form sends an empty title — must be accepted: ' + ui.text); assert.equal(ui.json.title, 'Casual leave');
   assert.equal((await call('POST', `/requests/${lv.json.id}/decide`, ctx.e1.token, { decision: 'approved' })).status, 403, 'employee cannot approve');
   assert.equal((await call('POST', `/requests/${lv.json.id}/decide`, ctx.e2.token, { decision: 'approved' })).status, 403);
   assert.equal((await call('POST', `/requests/${lv.json.id}/decide`, ctx.hr.token, { decision: 'rejected' })).status, 400, 'rejection needs a reason');
@@ -293,6 +294,32 @@ test('assignment to employees: accept → progress updates → admin sees it; re
   assert.equal((await call('POST', `/tickets/${id}/updates`, a.token, { note: 'Laptop configured and delivered', status: 'resolved' })).status, 200);
   d = (await call('GET', `/tickets/${id}`, ctx.admin)).json; assert.equal(d.status, 'resolved'); assert.equal(d.progress, 100); assert.equal(d.resolution_note, 'Laptop configured and delivered');
   assert.equal(d.ticket_no, no);
+
+  // employee reassigns a ticket they have accepted: same ID, new assignee must accept, admin + requester informed, they lose access
+  const r2 = await call('POST', '/tickets', ctx.admin, form({ subject: 'Hand-over test', description: 'employee passes it on', category_id: ctx.catIT.id, assignee_id: a.id })); assert.equal(r2.status, 201, r2.text);
+  const id2 = r2.json.id, no2 = r2.json.ticket_no;
+  d = (await call('GET', `/tickets/${id2}`, a.token)).json; assert.equal(d.actions.can_reassign, false, 'cannot reassign before accepting');
+  assert.equal((await call('POST', `/tickets/${id2}/assign`, a.token, { assignee_id: b.id, note: 'busy' })).status, 400);
+  assert.equal((await call('GET', `/tickets/${id2}/reassign-targets`, a.token)).status, 403);
+  assert.equal((await call('POST', `/tickets/${id2}/accept`, a.token, {})).status, 200);
+  assert.equal((await call('POST', `/tickets/${id2}/updates`, a.token, { note: 'Started', status: 'in_progress' })).status, 200);
+  d = (await call('GET', `/tickets/${id2}`, a.token)).json; assert.equal(d.actions.can_reassign, true); assert.equal(d.actions.can_assign, false);
+  const targets = (await call('GET', `/tickets/${id2}/reassign-targets`, a.token)); assert.equal(targets.status, 200);
+  assert.ok(targets.json.data.some((x: any) => x.id === b.id) && !targets.json.data.some((x: any) => x.id === a.id), 'colleagues listed, not myself');
+  assert.equal((await call('GET', `/tickets/${id2}/reassign-targets`, other.token)).status, 404, 'unrelated employee cannot list targets');
+  assert.equal((await call('POST', `/tickets/${id2}/assign`, other.token, { assignee_id: b.id, note: 'x' })).status, 404, 'unrelated employee cannot reassign');
+  assert.equal((await call('POST', `/tickets/${id2}/assign`, a.token, { assignee_id: b.id })).status, 400, 'a reason is required');
+  assert.equal((await call('POST', `/tickets/${id2}/assign`, a.token, { assignee_id: null, note: 'nobody' })).status, 400, 'must choose a person');
+  assert.equal((await call('POST', `/tickets/${id2}/assign`, a.token, { assignee_id: b.id, team_id: null, note: 'team change' })).status, 403, 'employees cannot touch the team');
+  assert.equal((await call('POST', `/tickets/${id2}/assign`, a.token, { assignee_id: a.id, note: 'to myself' })).status, 400, 'nothing to change');
+  assert.equal((await call('POST', `/tickets/${id2}/assign`, a.token, { assignee_id: b.id, note: 'Going on leave' })).status, 200);
+  d = (await call('GET', `/tickets/${id2}`, ctx.admin)).json;
+  assert.equal(d.ticket_no, no2); assert.equal(d.assignee_id, b.id); assert.equal(d.acceptance, 'pending'); assert.equal(d.status, 'assigned');
+  assert.ok(d.assignment_history.some((h: any) => h.from_assignee_name === 'assignA' && h.to_assignee_name === 'assignB' && h.changed_by_name === 'assignA'), 'trail shows who handed it over');
+  assert.ok((await call('GET', '/notifications', b.token)).json.data.some((n: any) => n.type === 'ticket_assigned' && n.entity_id === id2));
+  assert.ok((await call('GET', '/notifications', ctx.admin)).json.data.some((n: any) => n.type === 'ticket_assignment' && n.entity_id === id2), 'admin told');
+  assert.equal((await call('GET', `/tickets/${id2}`, a.token)).status, 404, 'previous assignee loses access');
+  assert.equal((await call('POST', `/tickets/${id2}/assign`, a.token, { assignee_id: other.id, note: 'again' })).status, 404, 'and cannot reassign it again');
 
   // admin / HR assignees need no acceptance
   const hrT = await call('POST', '/tickets', ctx.admin, form({ subject: 'HR handles this', description: 'direct assignment', category_id: ctx.catHR.id, assignee_id: ctx.hr.id }));

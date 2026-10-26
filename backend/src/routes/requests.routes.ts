@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
   res.json({ data: await query(`${SELECT} WHERE ${conds.join(' AND ')} ORDER BY (r.status='pending') DESC, r.created_at DESC LIMIT ${pageSize} OFFSET ${offset}`, params), total, page, pageSize });
 });
 
-const schema = z.object({ type: z.enum(['leave', 'equipment', 'document', 'other']), leave_type: z.enum(['annual', 'sick', 'casual', 'unpaid', 'other']).optional().nullable(), title: z.string().trim().min(2).max(160).optional(), reason: z.string().max(2000).optional().nullable(), start_date: z.string().optional().nullable(), end_date: z.string().optional().nullable(), send_to: z.enum(['hr', 'admin', 'both']).optional().nullable() });
+const schema = z.object({ type: z.enum(['leave', 'equipment', 'document', 'other']), leave_type: z.enum(['annual', 'sick', 'casual', 'unpaid', 'other']).optional().nullable(), title: z.string().trim().min(2).max(160).optional().nullable(), reason: z.string().max(2000).optional().nullable(), start_date: z.string().optional().nullable(), end_date: z.string().optional().nullable(), send_to: z.enum(['hr', 'admin', 'both']).optional().nullable() });
 router.post('/', async (req, res) => {
   const u = req.user!; const body = Object.fromEntries(Object.entries(req.body || {}).map(([k, v]) => [k, v === '' ? null : v])); const d = parse(schema, body);
   if (d.type === 'leave') {
