@@ -4,9 +4,9 @@ import { api, getToken, homeFor, roleOf, setSession } from '../api';
 import { Ic } from '../ui';
 
 const FEED = [
-  { id: 'HW-1042', t: 'Laptop will not boot', who: 'IT Support', d: 0 },
-  { id: 'HW-1043', t: 'Leave balance mismatch', who: 'HR Desk', d: -3 },
-  { id: 'HW-1044', t: 'VPN access request', who: 'Admin', d: -6 },
+  { id: 'BI-1042', t: 'Laptop will not boot', who: 'IT Support', d: 0 },
+  { id: 'BI-1043', t: 'Leave balance mismatch', who: 'HR Desk', d: -3 },
+  { id: 'BI-1044', t: 'VPN access request', who: 'Admin', d: -6 },
 ];
 const STAGES = ['Raised', 'Assigned', 'In progress', 'Resolved'];
 
@@ -15,7 +15,7 @@ function LiveDesk() {
   return <div className="live" aria-hidden="true">
     <div className="live-h"><span className="pulse" /> Live desk <svg className="bell" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.7 21a2 2 0 01-3.4 0" /></svg></div>
     <div className="live-s"><div><b className="cnt c-open-n" /><small>Open tickets</small></div><div><b className="cnt c-sla-n" /><small>SLA met</small></div><div><b className="cnt c-res-n" /><small>Resolved</small></div></div>
-    <div className="toast-new"><span className="tn-ic">+</span><span><b>New ticket · HW-1045</b><small>Printer offline · 3rd floor</small></span></div>
+    <div className="toast-new"><span className="tn-ic">+</span><span><b>New ticket · BI-1045</b><small>Printer offline · 3rd floor</small></span></div>
   </div>;
 }
 
@@ -37,7 +37,7 @@ export default function Login() {
   if (getToken()) return <Navigate to={homeFor(roleOf())} replace />;
   const submit = async (e: React.FormEvent) => {
     e.preventDefault(); setErr(''); setBusy(true);
-    try { const r = await api('/auth/login', { method: 'POST', body: { email, password } }); setSession(r.token, r.user); if (r.user.theme && !localStorage.getItem('hawmess_theme')) setTheme(r.user.theme, false); nav(r.user.home, { replace: true }); }
+    try { const r = await api('/auth/login', { method: 'POST', body: { email, password } }); setSession(r.token, r.user); if (r.user.theme && !localStorage.getItem('barid_in_theme')) setTheme(r.user.theme, false); nav(r.user.home, { replace: true }); }
     catch (x: any) { setErr(x.message); } finally { setBusy(false); }
   };
   return <div className="login-wrap">

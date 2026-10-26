@@ -1,13 +1,13 @@
 /**
- * Hawmess integration tests — run against a RUNNING API with a migrated + seeded database.
- *   API_URL=http://localhost:4000/api/v1 ADMIN_EMAIL=admin@hawmess.com ADMIN_PASSWORD=Admin@123 npm test
+ * Barid-IN integration tests — run against a RUNNING API with a migrated + seeded database.
+ *   API_URL=http://localhost:4000/api/v1 ADMIN_EMAIL=admin@barid-in.com ADMIN_PASSWORD=Admin@123 npm test
  * The suite creates its own throw-away users, so it does not depend on the demo accounts.
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
 const API = process.env.API_URL || 'http://localhost:4000/api/v1';
-const ADMIN = { email: process.env.ADMIN_EMAIL || 'admin@hawmess.com', password: process.env.ADMIN_PASSWORD || 'Admin@123' };
+const ADMIN = { email: process.env.ADMIN_EMAIL || 'admin@barid-in.com', password: process.env.ADMIN_PASSWORD || 'Admin@123' };
 const stamp = Date.now();
 
 async function call(method: string, path: string, token?: string, body?: any) {
@@ -39,7 +39,7 @@ test('SLA: deadlines come from the configured policy and priority changes recalc
   const created = new Date(r.json.created_at).getTime();
   assert.equal(new Date(r.json.resolution_due).getTime() - created, crit.resolution_minutes * 60000);
   assert.equal(new Date(r.json.first_response_due).getTime() - created, crit.first_response_minutes * 60000);
-  assert.match(r.json.ticket_no, /^HW-T\d{2}ID\d{2,4}$/); assert.equal(r.json.status, 'open');   // Hardware routes to IT Support team via the category rule
+  assert.match(r.json.ticket_no, /^BI-T\d{2}ID\d{2,4}$/); assert.equal(r.json.status, 'open');   // Hardware routes to IT Support team via the category rule
   const p = await call('PATCH', `/tickets/${ctx.t1.id}`, ctx.admin, { priority: 'low' }); assert.equal(p.status, 200);
   const d = (await call('GET', `/tickets/${ctx.t1.id}`, ctx.admin)).json; const low = sla.find((s: any) => s.priority === 'low' && !s.category_id);
   assert.equal(new Date(d.resolution_due).getTime() - created, low.resolution_minutes * 60000);

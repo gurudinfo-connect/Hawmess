@@ -13,7 +13,7 @@ After the first start set `RUN_SEED=false` (and use `SEED_DEMO=false` for a clea
 
 ## Local development
 ```bash
-# 1. database (the compose Postgres: db/user hawmess_tickets, localhost:5433)
+# 1. database (the compose Postgres: db/user barid_in_tickets, localhost:5433)
 docker compose up -d postgres
 # 2. API
 cd backend && cp .env.example .env && npm install
@@ -32,10 +32,10 @@ Top row: **Dashboard · Incidents ▾ · Favorites ▾ · Workspace**. Everythin
 ### Demo accounts (created by the seed when `SEED_DEMO=true` — change/remove before real use)
 | Role | Email | Password |
 |---|---|---|
-| Admin | admin@hawmess.com | Admin@123 |
-| HR | hr@hawmess.com | Hr@12345 |
-| HR (IT lead) | it@hawmess.com | Hr@12345 |
-| Employee | asha@ / ravi@ / meera@hawmess.com | Employee@123 |
+| Admin | admin@barid-in.com | Admin@123 |
+| HR | hr@barid-in.com | Hr@12345 |
+| HR (IT lead) | it@barid-in.com | Hr@12345 |
+| Employee | asha@ / ravi@ / meera@barid-in.com | Employee@123 |
 
 ## Tests & checks
 ```bash
@@ -46,7 +46,7 @@ cd ../frontend && npm run build                       # typecheck + production b
 The suite covers authentication, role permissions, privacy of tickets/internal notes/attachments, the full ticket lifecycle and history, SLA calculation, assignment + notifications, search/filter/sort/pagination/bulk, tasks, projects, leave approval rules, chat access, reports/CSV, audit log and the removal of accounting endpoints.
 
 ## Assigning to employees: accept → update → reassign
-- Staff can assign a ticket to **any active user, including employees** (on creation, from the ticket page, or in bulk). The ticket keeps the same reference ID (`HW-T16ID24`) for its whole life.
+- Staff can assign a ticket to **any active user, including employees** (on creation, from the ticket page, or in bulk). The ticket keeps the same reference ID (`BI-T16ID24`) for its whole life.
 - An employee sees tickets assigned to them (**Assigned to me**, **To accept**). Until they click **Accept ticket** they cannot start work; they can also **Decline** with a reason, which returns the ticket to the queue.
 - After accepting, the employee uses **Update progress**: a note, a % complete and optionally a status move (Start work / Pending / Resolve). Every step lands in the ticket's **Updates** tab.
 - Admin side: notification + dashboard "Employee responses", list tabs **Awaiting acceptance / Accepted / Declined**, an acceptance badge on every ticket, and the Updates tab.

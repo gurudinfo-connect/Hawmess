@@ -29,7 +29,7 @@ export async function sendEmail(params: SendEmailParams): Promise<SendEmailResul
   // Google shows App Passwords as "abcd efgh ijkl mnop" - the spaces are not part of the password
   const pass = isGmail ? process.env.SMTP_PASSWORD?.replace(/\s+/g, '') : process.env.SMTP_PASSWORD?.trim();
   // Gmail only sends as the authenticated account, so default the From address to it
-  const from = (isGmail && (!process.env.EMAIL_FROM || /example\.com|hawmess\.com|mopuribusiness\.com/i.test(process.env.EMAIL_FROM)))
+  const from = (isGmail && (!process.env.EMAIL_FROM || /example\.com|barid-in\.com|mopuribusiness\.com/i.test(process.env.EMAIL_FROM)))
     ? `Barid-IN <${user}>` : (process.env.EMAIL_FROM || 'no-reply@example.com');
 
   if (!host || !user || !pass) {

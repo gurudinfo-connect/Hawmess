@@ -6,7 +6,7 @@ import { slaTargets } from '../lib/sla';
  * Idempotent seed. Base configuration (roles, company, admin, departments, teams, categories, SLA policies, #general) is always ensured.
  * Demo people / projects / tickets are created only when SEED_DEMO is not "false" AND the database has no tickets yet.
  */
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@hawmess.com';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@barid-in.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Admin@123';
 
 async function seed() {
@@ -20,7 +20,7 @@ async function seed() {
   const roleId = async (n: string) => (await query<any>(`SELECT id FROM roles WHERE name=$1`, [n]))[0].id;
 
   let company = (await query<any>(`SELECT * FROM companies ORDER BY created_at LIMIT 1`))[0];
-  if (!company) company = (await query<any>(`INSERT INTO companies (name, legal_name, email) VALUES ('Barid-IN','Barid-IN','support@hawmess.com') RETURNING *`))[0];
+  if (!company) company = (await query<any>(`INSERT INTO companies (name, legal_name, email) VALUES ('Barid-IN','Barid-IN','support@barid-in.com') RETURNING *`))[0];
   const cid = company.id;
 
   const mkUser = async (name: string, email: string, password: string, role: string, extra: { dept?: string; designation?: string } = {}) => {
@@ -79,11 +79,11 @@ async function seed() {
 
 async function demo(cid: string, adminId: string, general: string, mkUser: any, teamId: (n: string) => Promise<string>) {
   console.log('Creating demo people, projects and tickets (set SEED_DEMO=false to skip)...');
-  const hr = await mkUser('Priya Nair', 'hr@hawmess.com', 'Hr@12345', 'hr', { dept: 'HR', designation: 'HR Manager' });
-  const asha = await mkUser('Asha Rao', 'asha@hawmess.com', 'Employee@123', 'employee', { dept: 'Engineering', designation: 'Software Engineer' });
-  const ravi = await mkUser('Ravi Kumar', 'ravi@hawmess.com', 'Employee@123', 'employee', { dept: 'Operations', designation: 'Operations Analyst' });
-  const meera = await mkUser('Meera Shah', 'meera@hawmess.com', 'Employee@123', 'employee', { dept: 'Finance', designation: 'Accountant' });
-  const itAgent = await mkUser('Karthik Iyer', 'it@hawmess.com', 'Hr@12345', 'hr', { dept: 'IT', designation: 'IT Support Lead' });
+  const hr = await mkUser('Priya Nair', 'hr@barid-in.com', 'Hr@12345', 'hr', { dept: 'HR', designation: 'HR Manager' });
+  const asha = await mkUser('Asha Rao', 'asha@barid-in.com', 'Employee@123', 'employee', { dept: 'Engineering', designation: 'Software Engineer' });
+  const ravi = await mkUser('Ravi Kumar', 'ravi@barid-in.com', 'Employee@123', 'employee', { dept: 'Operations', designation: 'Operations Analyst' });
+  const meera = await mkUser('Meera Shah', 'meera@barid-in.com', 'Employee@123', 'employee', { dept: 'Finance', designation: 'Accountant' });
+  const itAgent = await mkUser('Karthik Iyer', 'it@barid-in.com', 'Hr@12345', 'hr', { dept: 'IT', designation: 'IT Support Lead' });
   await query(`INSERT INTO conversation_members (conversation_id, user_id) SELECT $1, cu.user_id FROM company_users cu WHERE cu.company_id=$2 ON CONFLICT DO NOTHING`, [general, cid]);
   for (const [t, ids] of [['HR Services', [hr]], ['IT Support', [itAgent, adminId]], ['Facilities Desk', [hr]]] as [string, string[]][])
     for (const id of ids) await query(`INSERT INTO team_members (team_id, user_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`, [await teamId(t), id]);

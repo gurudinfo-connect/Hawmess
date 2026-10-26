@@ -1,9 +1,9 @@
 const BASE = (import.meta as any).env?.VITE_API_URL || 'https://hawmess-api.onrender.com/api/v1';
 export type Role = 'admin' | 'hr' | 'employee';
-export const getToken = () => localStorage.getItem('hawmess_token');
-export function setSession(token: string, user: any) { localStorage.setItem('hawmess_token', token); localStorage.setItem('hawmess_user', JSON.stringify(user)); }
-export function clearSession() { localStorage.removeItem('hawmess_token'); localStorage.removeItem('hawmess_user'); }
-export function getUser(): any { try { return JSON.parse(localStorage.getItem('hawmess_user') || 'null'); } catch { return null; } }
+export const getToken = () => localStorage.getItem('barid_in_token');
+export function setSession(token: string, user: any) { localStorage.setItem('barid_in_token', token); localStorage.setItem('barid_in_user', JSON.stringify(user)); }
+export function clearSession() { localStorage.removeItem('barid_in_token'); localStorage.removeItem('barid_in_user'); }
+export function getUser(): any { try { return JSON.parse(localStorage.getItem('barid_in_user') || 'null'); } catch { return null; } }
 export const roleOf = (): Role => { const r = getUser()?.role; return r === 'admin' || r === 'hr' ? r : 'employee'; };
 export const baseFor = (r: Role) => `/${r}`;
 export const homeFor = (r: Role) => `/${r}/dashboard`;

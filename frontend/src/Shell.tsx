@@ -89,7 +89,7 @@ function Notifications({ base }: { base: string }) {
       <Link to={`${base}/notifications`} onClick={() => setOpen(false)} style={{ textAlign: 'center', justifyContent: 'center', fontWeight: 600 }}>View all notifications</Link></div></div>;
 }
 
-export function setTheme(t: 'light' | 'dark', persist = true) { document.documentElement.dataset.theme = t; localStorage.setItem('hawmess_theme', t); if (persist) api('/users/me', { method: 'PATCH', body: { theme: t } }).catch(() => {}); }
+export function setTheme(t: 'light' | 'dark', persist = true) { document.documentElement.dataset.theme = t; localStorage.setItem('barid_in_theme', t); if (persist) api('/users/me', { method: 'PATCH', body: { theme: t } }).catch(() => {}); }
 
 export default function Shell() {
   const role = roleOf(); const base = baseFor(role); const user = getUser(); const loc = useLocation(); const nav = useNavigate();
@@ -101,7 +101,7 @@ export default function Shell() {
   const { left, more } = menu(role, navq.data || {}); const chat = useQuery({ queryKey: ['chat-unread'], queryFn: () => api('/chat/unread'), refetchInterval: 8000 });
   useEffect(() => { setOpen(false); setPm(false); setMm(false); window.scrollTo(0, 0); }, [loc.pathname, loc.search]);
   useEffect(() => { const h = (e: MouseEvent) => { if (!pbox.current?.contains(e.target as Node)) setPm(false); if (!mbox.current?.contains(e.target as Node)) setMm(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
-  useEffect(() => { if (user?.theme && !localStorage.getItem('hawmess_theme')) { setTheme(user.theme, false); setT(user.theme); } }, []);   // eslint-disable-line
+  useEffect(() => { if (user?.theme && !localStorage.getItem('barid_in_theme')) { setTheme(user.theme, false); setT(user.theme); } }, []);   // eslint-disable-line
   const toggle = () => { const n = theme === 'dark' ? 'light' : 'dark'; setT(n); setTheme(n); };
   const logout = async () => { await api('/auth/logout', { method: 'POST' }).catch(() => {}); clearSession(); nav('/login'); };
   const [sp] = useSearchParams();

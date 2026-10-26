@@ -1,4 +1,4 @@
--- Hawmess helpdesk: tickets, SLA, projects, requests, chat, configuration.
+-- Barid-IN helpdesk: tickets, SLA, projects, requests, chat, configuration.
 -- ADDITIVE ONLY: no accounting/quotation tables are dropped (data is preserved; the application no longer uses them).
 
 INSERT INTO roles (name, permissions) VALUES ('hr', '["tickets.manage.hr","people.view","requests.decide","projects.view","reports.view"]')

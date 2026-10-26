@@ -44,3 +44,11 @@ Dependencies removed: `pdfkit`, `qrcode` (+ types). Frontend: every invoice / qu
 
 ## Logo update (new Barid-IN logo)
 - `frontend/public/`: `barid-logo.png`, `barid-logo-nav.png` (used by the top bar and the login page), `barid-mark.png` and `favicon.png` regenerated from the new logo (transparent, cropped to content, same 1400px width and aspect ratio as before, so no code or CSS changes).
+
+## Full rename to Barid-IN
+- Database / compose: db + user `hawmess_tickets` → `barid_in_tickets`, volume `barid_in_tickets_pgdata` (`docker-compose.yml`, `.env*`, `backend/src/db/pool.ts`, README). Existing databases must be renamed or re-created — see the hand-over notes.
+- Logins: `@hawmess.com` → `@barid-in.com` (seed, tests, README, `.env*`); migration `025_barid_in_identity.sql` renames existing users / company contact details.
+- Ticket reference IDs: `HW-T16ID24` → `BI-T16ID24` (migration 025 renames existing tickets and the generator).
+- Package names `barid-in-frontend` / `barid-in-backend`; browser storage keys `barid_in_token / _user / _theme` (everyone is signed out once); e-mail sender name; comments and docs.
+- Removed the unused `hawmess-*.png` logo files.
+- Intentionally unchanged: old migrations `002/003/013/024` (they are history and migration 024 must still match the old name), earlier entries in this file, and the two deployed Render URLs `hawmess-api.onrender.com` / `hawmess-frontend.onrender.com` (rename those services on Render first, then update `frontend/src/api.ts` and `backend/src/index.ts`).
