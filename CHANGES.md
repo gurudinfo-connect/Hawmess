@@ -41,3 +41,6 @@ Dependencies removed: `pdfkit`, `qrcode` (+ types). Frontend: every invoice / qu
 
 ## Fix: applying for leave
 - `backend/src/routes/requests.routes.ts` — the leave form sends an empty title, which became `null` and failed validation (`title: Expected string, received null`). `title` now accepts null; the server fills in "<Type> leave". Regression check added in `tests/helpdesk.test.ts`.
+
+## Logo update (new Barid-IN logo)
+- `frontend/public/`: `barid-logo.png`, `barid-logo-nav.png` (used by the top bar and the login page), `barid-mark.png` and `favicon.png` regenerated from the new logo (transparent, cropped to content, same 1400px width and aspect ratio as before, so no code or CSS changes).
