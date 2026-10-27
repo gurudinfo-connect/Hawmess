@@ -387,7 +387,7 @@ html{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::
 /* ---------- Schedule calendar ---------- */
 .rot90{transform:rotate(90deg)}.rot-90{transform:rotate(-90deg)}
 .mt-views{margin-bottom:14px}.mt-layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start}
-.mt-cal-h{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}.mt-cal-h h2{font:700 19px var(--display);margin:0 6px;min-width:150px;text-align:center}.mt-cal-h 
+.mt-cal-h{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}.mt-cal-h h2{font:700 19px var(--display);margin:0 6px;min-width:150px;text-align:center}.mt-cal-h .sp{flex:1}
 .mt-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--border);border-left:1px solid var(--border);border-radius:10px;overflow:hidden}
 .mt-dow{padding:6px 8px;font:600 12px var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.05em;background:var(--card2);border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
 .mt-day{min-height:104px;padding:5px 6px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);cursor:pointer;display:flex;flex-direction:column;gap:2px;background:var(--card);min-width:0}
