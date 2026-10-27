@@ -38,7 +38,7 @@ export default function Schedule() {
   const open = (date: string, m?: any) => setForm({ date, m });
   const grouped = useMemo(() => { const g = new Map<string, any[]>(); for (const x of agenda.data?.data || []) (g.get(x.meeting_date) || g.set(x.meeting_date, []).get(x.meeting_date)!).push(x); return [...g.entries()]; }, [agenda.data]);
 
-  return <><PageHead crumbs={[{ label: 'Schedule' }]} title="Schedule" sub="Plan meetings, invite people, keep your own schedule and get alerted before it starts">
+  return <div className="mt-theme"><PageHead crumbs={[{ label: 'Schedule' }]} title="Schedule" sub="Plan meetings, invite people, keep your own schedule and get alerted before it starts">
       <DesktopAlerts /><button className="btn primary" onClick={() => open(view === 'calendar' ? sel : today)}><Ic n="plus" />Schedule a meeting</button></PageHead>
     <div className="seg mt-views" role="tablist" aria-label="Schedule views">{([['calendar', 'Calendar'], ['agenda', 'My saved schedule'], ['past', 'Past meetings']] as const).map(([k, l]) => <button key={k} role="tab" aria-selected={view === k} className={view === k ? 'on' : ''} onClick={() => setView(k)}>{l}</button>)}</div>
 
@@ -70,5 +70,5 @@ export default function Schedule() {
       {agenda.isLoading ? <div className="card"><Skeleton rows={6} /></div> : !grouped.length ? <div className="card"><Empty icon="calendar" title={view === 'agenda' ? 'Your saved schedule is empty' : 'No past meetings'}>{view === 'agenda' ? 'Schedule a meeting, or save a company-wide one from the calendar (All visible).' : ''}</Empty></div>
         : grouped.map(([d, list]) => <section key={d} className="mt-agenda-d"><h4>{niceDate(d)}{d === today ? ' · Today' : ''}</h4><div className="mt-list">{list.map(m => <MeetingCard key={m.id} m={m} focus={m.id === focusId} onEdit={x => open(x.meeting_date, x)} />)}</div></section>)}
     </div>}
-    {form && <MeetingForm initial={form.m} date={form.date} onClose={() => setForm(null)} onSaved={m => m?.meeting_date && view === 'calendar' && setSel(m.meeting_date)} />}</>;
+    {form && <MeetingForm initial={form.m} date={form.date} onClose={() => setForm(null)} onSaved={m => m?.meeting_date && view === 'calendar' && setSel(m.meeting_date)} />}</div>;
 }

@@ -410,3 +410,8 @@ html{scrollbar-width:none;-ms-overflow-style:none}html::-webkit-scrollbar,body::
 @keyframes mtin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){.mt-alert{animation:none}}
 @media(max-width:1060px){.mt-layout{grid-template-columns:1fr}.mt-side{position:static;max-height:none}}
 @media(max-width:760px){.mt-day{min-height:62px}.mt-ev{font-size:0;padding:0;height:6px;border-left:0;background:var(--c);border-radius:3px}.mt-ev i,.mt-more-n{display:none}.mt-body{padding-left:12px}.mt-alerts{top:60px}}
+
+/* Schedule keeps its own warm palette (orange accents, navy tabs) whatever the app theme is, so it looks the same as in the HR tool. */
+.mt-theme,.mt-alerts{--navy:#0f2038;--navy2:#17304f;--orange:#e8590c;--primary:#e8590c;--primary-h:#cf4d06;--on-primary:#fff;--amber:#fdb71f;--teal:#0fb5c0;--blue:#0b5a85;--link:#0b5a85;--sel:#fff1e6}
+:root[data-theme=dark] .mt-theme,:root[data-theme=dark] .mt-alerts{--sel:#2a2231;--link:#52c3e8}
+
