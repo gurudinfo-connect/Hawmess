@@ -20,6 +20,7 @@ import Chat from './pages/Chat';
 import BusinessApps from './pages/BusinessApps';
 import ServiceCatalogue from './pages/ServiceCatalogue';
 import EmployeeCentre from './pages/EmployeeCentre';
+import Schedule from './pages/schedule/Schedule';
 import Knowledge, { KnowledgeArticle, KnowledgeEditor } from './pages/Knowledge';
 
 /** The server enforces every permission; this guard only keeps people on screens that make sense for their role. */
@@ -46,6 +47,7 @@ const RoleRoutes = ({ role }: { role: Role }) => (
     <Route path="projects" element={<Projects />} />
     <Route path="projects/:id" element={<Projects />} />
     <Route path="reports" element={<Reports />} />
+    <Route path="schedule" element={<Schedule />} />
     <Route path="todos" element={<Todos />} />
     <Route path="notifications" element={<Notifications />} />
     <Route path="chat" element={<Chat />} />

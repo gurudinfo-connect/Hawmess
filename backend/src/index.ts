@@ -17,6 +17,7 @@ import dashboardRoutes from './routes/dashboard.routes';
 import reportsRoutes from './routes/reports.routes';
 import chatRoutes from './routes/chat.routes';
 import knowledgeRoutes from './routes/knowledge.routes';
+import meetingsRoutes from './routes/meetings.routes';
 import miscRoutes from './routes/misc.routes';
 import { requestContext } from './lib/auth';
 import { HttpError } from './lib/http';
@@ -62,6 +63,7 @@ app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/reports', reportsRoutes);
 app.use('/api/v1/chat', chatRoutes);
 app.use('/api/v1/knowledge', knowledgeRoutes);
+app.use('/api/v1/meetings', meetingsRoutes);
 app.use('/api/v1', miscRoutes);   // /notifications /audit-logs /search
 app.use('/api/v1', (_req, res) => res.status(404).json({ error: 'Not found' }));
 

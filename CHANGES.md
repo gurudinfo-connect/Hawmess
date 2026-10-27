@@ -52,3 +52,12 @@ Dependencies removed: `pdfkit`, `qrcode` (+ types). Frontend: every invoice / qu
 - Package names `barid-in-frontend` / `barid-in-backend`; browser storage keys `barid_in_token / _user / _theme` (everyone is signed out once); e-mail sender name; comments and docs.
 - Removed the unused `hawmess-*.png` logo files.
 - Intentionally unchanged: old migrations `002/003/013/024` (they are history and migration 024 must still match the old name), earlier entries in this file, and the two deployed Render URLs `hawmess-api.onrender.com` / `hawmess-frontend.onrender.com` (rename those services on Render first, then update `frontend/src/api.ts` and `backend/src/index.ts`).
+
+## Schedule calendar (ported from the Barid-IN HR tool)
+Meetings, per-person saved schedule, accept/decline, clash warnings and alerts, available to admin, HR and employees.
+- `backend/migrations/026_meetings.sql` — `meetings` and `meeting_attendees` tables (additive, idempotent; also self-applied on first use).
+- `backend/src/routes/meetings.routes.ts` — `/api/v1/meetings` (calendar range, agenda, summary/alerts, conflicts, create/update/cancel/restore/delete, save to my schedule, my response + alert, snooze/dismiss).
+- `backend/src/lib/reminders.ts` — `runMeetingReminders()` sends one bell notification per person when their alert time is reached (checked every minute).
+- `backend/src/index.ts` — mounts the meetings route.
+- `frontend/src/pages/schedule/` — `Schedule`, `MeetingCard`, `MeetingForm`, `MeetingAlerts`, `shared`.
+- `frontend/src/App.tsx` (route `/:role/schedule`), `Shell.tsx` (menu: All → Schedule calendar / My saved schedule & alerts, today's-count badge, alert banner), `pages/Notifications.tsx` (meeting icons + click-through), `styles.css` (calendar styles).

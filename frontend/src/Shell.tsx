@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ago, baseFor, clearSession, getUser, Role, roleLabel, roleOf } from './api';
 import { Avatar, Ic, useDebounced } from './ui';
+import MeetingAlerts from './pages/schedule/MeetingAlerts';
 
 type Child = { label: string; to?: string; icon?: string; badge?: number; heading?: boolean; hint?: boolean; divider?: boolean };
 type Item = { label: string; to?: string; icon?: string; badge?: number; children?: Child[]; active?: (path: string, sp: URLSearchParams) => boolean };
@@ -50,6 +51,7 @@ function menu(role: Role, nv: any = {}): { left: Item[]; more: Item[] } {
     SS('Self service'),
     ...(role === 'employee' ? [{ label: 'Apply for leave', to: `${b}/todos?tab=requests&new=leave` }] : []),
     { label: 'My requests', to: t('?type=service_request&view=requested') },
+    { label: 'Schedule calendar', to: `${b}/schedule`, icon: 'calendar', badge: nv.meetings_today }, { label: 'My saved schedule & alerts', to: `${b}/schedule?view=agenda`, icon: 'bell' },
     { label: 'Business applications', to: `${b}/business-applications` }, { label: 'Dashboards', to: `${b}/dashboard` }, { label: 'Service catalogue', to: `${b}/service-catalogue` },
     { label: 'Employee centre', to: `${b}/employee-centre` }, { label: 'Knowledge', to: `${b}/knowledge` },
     { label: 'All Employees', to: role === 'employee' ? `${b}/chat` : `${b}/people?role=employee`, icon: 'users' },
@@ -99,7 +101,8 @@ export default function Shell() {
   useEffect(() => { const b = settings.data?.branding; if (b?.primary_color && b.primary_color.toLowerCase() !== '#e8590c') {   // ignore the legacy orange default
      const r = document.documentElement.style; r.setProperty('--primary', b.primary_color); r.setProperty('--primary-h', b.primary_color); if (b.accent_color) r.setProperty('--amber', b.accent_color); } }, [settings.data]);
   const navq = useQuery({ queryKey: ['ticket-nav'], queryFn: () => api('/tickets/nav'), refetchInterval: 30000 });
-  const { left, more } = menu(role, navq.data || {}); const chat = useQuery({ queryKey: ['chat-unread'], queryFn: () => api('/chat/unread'), refetchInterval: 8000 });
+  const meet = useQuery({ queryKey: ['meet', 'summary'], queryFn: () => api('/meetings/summary'), refetchInterval: 30000 });   // today's count + alerts that are due now
+  const { left, more } = menu(role, { ...(navq.data || {}), meetings_today: meet.data?.today }); const chat = useQuery({ queryKey: ['chat-unread'], queryFn: () => api('/chat/unread'), refetchInterval: 8000 });
   useEffect(() => { setOpen(false); setPm(false); setMm(false); window.scrollTo(0, 0); }, [loc.pathname, loc.search]);
   useEffect(() => { const h = (e: MouseEvent) => { if (!pbox.current?.contains(e.target as Node)) setPm(false); if (!mbox.current?.contains(e.target as Node)) setMm(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
   useEffect(() => { if (user?.theme && !localStorage.getItem('barid_in_theme')) { setTheme(user.theme, false); setT(user.theme); } }, []);   // eslint-disable-line
@@ -136,6 +139,7 @@ export default function Shell() {
         <button className="tool burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(o => !o)}><Ic n={open ? 'x' : 'menu'} /></button>
       </div>
     </header>
+    <MeetingAlerts alerts={meet.data?.alerts} />
     <main id="main" className="page"><Outlet /></main>
   </>;
 }
