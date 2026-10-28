@@ -36,19 +36,26 @@ declare global {
 const ctx = new AsyncLocalStorage<{ ip?: string }>();
 export function requestContext(req: Request, _res: Response, next: NextFunction) { ctx.run({ ip: req.ip }, next); }
 
+/** Resolves a bearer token to the CURRENT user record (role / active state are always re-read from the database). Shared by the REST middleware and the Socket.IO handshake. */
+export async function authenticateToken(token: string): Promise<{ user: AuthUser; exp?: number } | { error: string; status: 401 | 403 }> {
+  let decoded: any;
+  try { decoded = jwt.verify(token, JWT_SECRET); } catch { return { error: 'Invalid or expired token', status: 401 }; }
+  const rows = await query<any>(
+    `SELECT u.id, u.email, u.name, u.is_active, cu.company_id, r.name AS role, r.permissions
+     FROM users u JOIN company_users cu ON cu.user_id = u.id JOIN roles r ON r.id = cu.role_id
+     WHERE u.id = $1 LIMIT 1`, [decoded.id]);
+  if (rows.length === 0) return { error: 'Invalid or expired token', status: 401 };
+  if (!rows[0].is_active) return { error: 'Account is deactivated', status: 403 };
+  return { exp: typeof decoded.exp === 'number' ? decoded.exp : undefined, user: { id: rows[0].id, email: rows[0].email, name: rows[0].name, company_id: rows[0].company_id, role: normRole(rows[0].role), permissions: rows[0].permissions } };
+}
+
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
     const header = req.headers.authorization;
     if (!header || !header.startsWith('Bearer ')) return res.status(401).json({ error: 'Missing or invalid Authorization header' });
-    let decoded: any;
-    try { decoded = jwt.verify(header.slice(7), JWT_SECRET); } catch { return res.status(401).json({ error: 'Invalid or expired token' }); }
-    const rows = await query<any>(
-      `SELECT u.id, u.email, u.name, u.is_active, cu.company_id, r.name AS role, r.permissions
-       FROM users u JOIN company_users cu ON cu.user_id = u.id JOIN roles r ON r.id = cu.role_id
-       WHERE u.id = $1 LIMIT 1`, [decoded.id]);
-    if (rows.length === 0) return res.status(401).json({ error: 'Invalid or expired token' });
-    if (!rows[0].is_active) return res.status(403).json({ error: 'Account is deactivated' });
-    req.user = { id: rows[0].id, email: rows[0].email, name: rows[0].name, company_id: rows[0].company_id, role: normRole(rows[0].role), permissions: rows[0].permissions };
+    const r = await authenticateToken(header.slice(7));
+    if ('error' in r) return res.status(r.status).json({ error: r.error });
+    req.user = r.user;
     next();
   } catch (e) { next(e); }
 }

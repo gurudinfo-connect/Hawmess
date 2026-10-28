@@ -10,7 +10,8 @@
     "migrate": "ts-node src/db/migrate.ts",
     "seed": "ts-node src/db/seed.ts",
     "typecheck": "tsc -p . --noEmit",
-    "test": "node --require ts-node/register/transpile-only --test --test-concurrency=1 tests/helpdesk.test.ts"
+    "test": "node --require ts-node/register/transpile-only --test --test-concurrency=1 tests/helpdesk.test.ts tests/callManager.test.ts tests/calls.test.ts",
+    "test:unit": "node --require ts-node/register/transpile-only --test tests/callManager.test.ts"
   },
   "dependencies": {
     "@types/multer": "^2.3.0",
@@ -25,6 +26,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.14",
     "pg": "^8.12.0",
+    "socket.io": "^4.8.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -36,6 +38,7 @@
     "@types/node": "^20.14.9",
     "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.11.6",
+    "socket.io-client": "^4.8.1",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.3"

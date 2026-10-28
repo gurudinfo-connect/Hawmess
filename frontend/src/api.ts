@@ -1,4 +1,4 @@
-const BASE = (import.meta as any).env?.VITE_API_URL || 'https://hawmess-api.onrender.com/api/v1';
+export const BASE: string = (import.meta as any).env?.VITE_API_URL || 'https://hawmess-api.onrender.com/api/v1';
 export type Role = 'admin' | 'hr' | 'employee';
 export const getToken = () => localStorage.getItem('barid_in_token');
 export function setSession(token: string, user: any) { localStorage.setItem('barid_in_token', token); localStorage.setItem('barid_in_user', JSON.stringify(user)); }

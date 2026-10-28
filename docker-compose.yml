@@ -25,6 +25,15 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       EMAIL_FROM: ${EMAIL_FROM:-Barid-IN <no-reply@example.com>}
+      # Internal audio / video calling (WebRTC). STUN works out of the box; add a TURN server for users behind strict firewalls / symmetric NAT.
+      WEBRTC_STUN_URLS: ${WEBRTC_STUN_URLS-stun:stun.l.google.com:19302}
+      WEBRTC_TURN_URLS: ${WEBRTC_TURN_URLS:-}
+      WEBRTC_TURN_SECRET: ${WEBRTC_TURN_SECRET:-}
+      WEBRTC_TURN_TTL_SECONDS: ${WEBRTC_TURN_TTL_SECONDS:-3600}
+      WEBRTC_TURN_USERNAME: ${WEBRTC_TURN_USERNAME:-}
+      WEBRTC_TURN_CREDENTIAL: ${WEBRTC_TURN_CREDENTIAL:-}
+      CALL_RING_TIMEOUT_MS: ${CALL_RING_TIMEOUT_MS:-45000}
+      CALL_RECONNECT_GRACE_MS: ${CALL_RECONNECT_GRACE_MS:-20000}
     volumes: [uploads:/app/storage]
   frontend:
     build: ./frontend

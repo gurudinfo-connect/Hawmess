@@ -1,3 +1,11 @@
+## Internal audio / video calling (ported from the Barid-IN HR tool)
+- Direct messages in **Chat** now have audio and video call buttons, live presence (Available / Busy / Offline), a **Calls** tab with history, and a per-person "Call history" menu. Incoming calls ring on any page; missed calls create a notification.
+- Media is WebRTC peer-to-peer (never recorded or stored); signalling runs over an authenticated Socket.IO connection at `/api/v1/realtime` using the same JWT as the REST API. Only call metadata is saved (migration `027_calls.sql`, table `calls`).
+- Backend: `lib/callManager.ts`, `lib/callSocket.ts`, `lib/callStore.ts`, `lib/webrtcConfig.ts`, `routes/calls.routes.ts`; `lib/auth.ts` gained `authenticateToken`; `index.ts` now runs on an `http.Server` and closes open calls on shutdown. New dependency: `socket.io` (backend), `socket.io-client` (frontend + backend tests).
+- Config: `WEBRTC_STUN_URLS`, optional TURN (`WEBRTC_TURN_URLS` + `WEBRTC_TURN_SECRET` or username/credential), `CALL_RING_TIMEOUT_MS`, `CALL_RECONNECT_GRACE_MS`. nginx and the Vite proxy forward the WebSocket. Camera / microphone need HTTPS (or localhost); add a TURN server for users behind strict firewalls.
+- Deploy notes: run `npm run migrate` (adds `calls`). On Render the web service must allow WebSocket traffic (it does by default). Socket origins reuse the `allowedOrigins` list in `backend/src/index.ts`.
+- Tests: `tests/callManager.test.ts` (unit, 38 passing) and `tests/calls.test.ts` (integration, needs a running API + DB).
+
 # Files and modules changed
 
 ## Removed (accounting / quotation / CRM)

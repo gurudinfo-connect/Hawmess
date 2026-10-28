@@ -1,3 +1,4 @@
+import { CallProvider } from './calls/CallProvider';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -82,7 +83,7 @@ function Notifications({ base }: { base: string }) {
   const [open, setOpen] = useState(false); const nav = useNavigate(); const qc = useQueryClient(); const box = useRef<HTMLDivElement>(null);
   const q = useQuery({ queryKey: ['notifs'], queryFn: () => api('/notifications?pageSize=8'), refetchInterval: 20000 });
   useEffect(() => { const h = (e: MouseEvent) => { if (!box.current?.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
-  const target = (n: any) => n.entity_type === 'ticket' ? `${base}/tickets/${n.entity_id}` : n.entity_type === 'project' ? `${base}/projects/${n.entity_id}` : n.entity_type === 'task' ? `${base}/todos` : n.entity_type === 'employee_request' ? `${base}/todos?tab=requests` : `${base}/notifications`;
+  const target = (n: any) => n.entity_type === 'call' ? `${base}/chat?tab=calls` : n.entity_type === 'ticket' ? `${base}/tickets/${n.entity_id}` : n.entity_type === 'project' ? `${base}/projects/${n.entity_id}` : n.entity_type === 'task' ? `${base}/todos` : n.entity_type === 'employee_request' ? `${base}/todos?tab=requests` : `${base}/notifications`;
   const click = async (n: any) => { setOpen(false); if (!n.is_read) { await api(`/notifications/${n.id}/read`, { method: 'POST' }).catch(() => {}); qc.invalidateQueries({ queryKey: ['notifs'] }); } nav(target(n)); };
   const unread = q.data?.unread || 0;
   return <div className="nav-item" ref={box}><button className="tool" aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`} aria-expanded={open} onClick={() => setOpen(o => !o)}><Ic n="bell" />{unread > 0 && <span className="dot">{unread > 99 ? '99+' : unread}</span>}</button>
@@ -117,7 +118,7 @@ export default function Shell() {
     <div className="nav-item" key={it.label}><button className={`nav-link ${isActive(it) ? 'active' : ''}`} aria-haspopup="true"><Ic n={it.icon || 'dashboard'} />{it.label}<Ic n="down" /></button>
       <div className="dd">{it.children.map(child)}</div></div>
   ) : <Link key={it.label} to={it.to!} className={`nav-link ${isActive(it) ? 'active' : ''}`}><Ic n={it.icon || 'dashboard'} />{it.label}{badge(it.badge)}</Link>;
-  return <>
+  return <CallProvider><>
     <a className="skip" href="#main">Skip to content</a>
     <header className={`nav ${open ? 'open' : ''}`}>
       <nav className="nav-l" aria-label="Main">{left.map(render)}
@@ -141,5 +142,5 @@ export default function Shell() {
     </header>
     <MeetingAlerts alerts={meet.data?.alerts} />
     <main id="main" className="page"><Outlet /></main>
-  </>;
+  </></CallProvider>;
 }
